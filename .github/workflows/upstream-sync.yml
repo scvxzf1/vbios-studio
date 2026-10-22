@@ -1,0 +1,100 @@
+# Manual upstream synchronisation.
+#
+# Fetches one of the two Panchovix upstream repositories and tries to merge it
+# into a dedicated branch.  A clean merge is pushed and opened as a pull
+# request; conflicts are aborted and reported in a draft pull request so a human
+# can resolve them without ever force-overwriting local work.
+name: upstream-sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream:
+        description: Which upstream repository to sync
+        type: choice
+        required: true
+        default: editor
+        options:
+          - editor
+          - loader
+      ref:
+        description: Branch, tag or commit SHA to fetch
+        type: string
+        required: true
+        default: main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  PIP_INDEX_URL: https://pypi.org/simple
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Merge upstream or open a conflict PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM: ${{ inputs.upstream }}
+          REF: ${{ inputs.ref }}
+        run: |
+          set -euo pipefail
+          case "$UPSTREAM" in
+            editor) url=https://github.com/Panchovix/nvidia-vbios-vix-editor.git ;;
+            loader) url=https://github.com/Panchovix/nvidia-windows-vbios-vix-loader.git ;;
+            *) echo "unknown upstream: $UPSTREAM" >&2; exit 2 ;;
+          esac
+          git remote add upstream "$url" 2>/dev/null || git remote set-url upstream "$url"
+          git fetch --no-tags upstream "$REF"
+          sha=$(git rev-parse FETCH_HEAD)
+          branch="sync/${UPSTREAM}-$(date -u +%Y%m%d-%H%M%S)"
+          git switch -c "$branch"
+          if git merge --no-commit --no-ff "$sha"; then
+            if git diff --cached --quiet; then
+              echo "upstream is already merged; nothing to do"
+              exit 0
+            fi
+            git commit -m "chore: sync $UPSTREAM upstream $sha"
+            git push -u origin "$branch"
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+              --title "chore: sync $UPSTREAM upstream ${sha:0:12}" \
+              --body "Manual upstream sync of \`$url\` at \`$sha\`. Review the diff, update UPSTREAM.md pins and run the parity + full static test suite before merging."
+          else
+            conflicts=$(git diff --name-only --diff-filter=U | sed 's/^/- `/' | sed 's/$/`/' || true)
+            git merge --abort || true
+            git switch main
+            git switch -c "$branch"
+            {
+              echo "# Upstream sync conflict: $UPSTREAM $sha"
+              echo
+              echo "The automatic merge of \`$url\` at \`$sha\` conflicts with this repository."
+              echo "Nothing was overwritten: the merge was aborted and this report is the only change."
+              echo
+              echo "## Conflicting paths"
+              echo
+              printf '%s\n' "${conflicts:-（未记录）}"
+              echo
+              echo "## Required follow-up"
+              echo
+              echo "1. Resolve each file by hand; never take upstream wholesale over local work."
+              echo "2. Update UPSTREAM.md with the new 40-character pin."
+              echo "3. Run the parity and full static test suites."
+            } > docs/upstream-sync-conflict.md
+            git add docs/upstream-sync-conflict.md
+            git commit -m "docs: report $UPSTREAM upstream sync conflict at ${sha:0:12}"
+            git push -u origin "$branch"
+            gh pr create --draft --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+              --title "chore: resolve $UPSTREAM upstream sync conflict (${sha:0:12})" \
+              --body "Automatic merge of \`$url\` at \`$sha\` conflicted. See \`docs/upstream-sync-conflict.md\` for the paths and follow-up steps. This PR is a draft: resolve the conflicts manually, update UPSTREAM.md, run parity tests, then mark it ready."
+          fi

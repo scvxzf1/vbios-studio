@@ -1,0 +1,46 @@
+# Quality gates for every push to main and every pull request.
+#
+# The Ubuntu job deliberately uses /usr/bin/python3 (Ubuntu 24.04, Python 3.12)
+# instead of actions/setup-python: PyGObject must come from the distribution
+# package python3-gi.  A venv created from a setup-python interpreter cannot see
+# /usr/lib/python3/dist-packages, and pip-installing PyGObject would need
+# gtk4.pc/libadwaita-1.pc, which the runners do not have.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PIP_INDEX_URL: https://pypi.org/simple
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  quality:
+    name: quality (ubuntu-24.04, Python 3.12)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+      - name: System GTK 4 / PyGObject and xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-venv python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 libgtk-4-1 \
+            desktop-file-utils xvfb
+      - name: Quality gates (same script as local)
+        run: bash tools/build_local.sh --check
+      - name: Repository hygiene
+        run: |
+          if [ -f tools/prepush_audit.py ]; then
+            python3 tools/prepush_audit.py --strict
+          else
+            echo "tools/prepush_audit.py not present yet; hygiene gate is owned by t10"
+          fi

@@ -1,0 +1,106 @@
+# Build distributable artifacts on both target platforms.
+#
+# Linux: a tar.gz package that uses the distribution's PyGObject/GTK 4 runtime.
+# Windows: a single-file exe built with Nuitka inside MSYS2 UCRT64, bundling the
+# GTK 4 runtime (onefile, no network on first start).
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  PIP_INDEX_URL: https://pypi.org/simple
+
+jobs:
+  linux:
+    name: linux-x86_64
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+      - name: System GTK 4 / PyGObject and xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-venv python3-gi gir1.2-gtk-4.0 gir1.2-adw-1 libgtk-4-1 \
+            desktop-file-utils xvfb
+      - name: Build Linux tar.gz
+        run: bash tools/build_local.sh --dist
+      - name: Smoke test the package
+        run: |
+          tarball=$(ls dist/vbios-studio-*-linux-x86_64.tar.gz)
+          work=$(mktemp -d)
+          tar -xzf "$tarball" -C "$work"
+          package=$(find "$work" -maxdepth 1 -mindepth 1 -type d -name 'vbios-studio-*')
+          "$package/bin/vbios-studio" --version
+          xvfb-run -a "$package/bin/vbios-studio" --selftest
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: vbios-studio-linux
+          path: |
+            dist/vbios-studio-*-linux-x86_64.tar.gz
+            dist/SHA256SUMS
+          if-no-files-found: error
+
+  windows:
+    name: windows-x86_64
+    runs-on: windows-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e  # v2.33.0
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            mingw-w64-ucrt-x86_64-python
+            mingw-w64-ucrt-x86_64-python-pip
+            mingw-w64-ucrt-x86_64-python-gobject
+            mingw-w64-ucrt-x86_64-gtk4
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-binutils
+            mingw-w64-ucrt-x86_64-ntldd
+            zip
+      - name: Install Nuitka and Zig
+        run: |
+          python -m pip install --index-url https://pypi.org/simple --break-system-packages \
+            nuitka==4.2.2 ordered-set==4.1.0 zstandard==0.23.0
+          python -m pip download --index-url https://pypi.org/simple --no-deps \
+            --only-binary=:all: --platform win_amd64 --python-version 3.12 \
+            -d zigwheel ziglang==0.16.0
+          python -m zipfile -e zigwheel/ziglang-0.16.0-*.whl zig
+          zig/ziglang/zig.exe version
+      - name: Build single-file exe
+        run: |
+          export PATH="$PWD/zig/ziglang:$PATH"
+          VERSION=$(python - <<'PY'
+          import pathlib, re
+          text = pathlib.Path('src/vbios_studio/__init__.py').read_text(encoding='utf-8')
+          match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', text, re.M)
+          print(match.group(1) if match else '')
+          PY
+          )
+          VERSION=$(printf '%s' "$VERSION" | tr -d '\r')
+          test -n "$VERSION"
+          VERSION="$VERSION" bash tools/release/build-windows.sh
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: vbios-studio-windows
+          path: |
+            dist-windows/vbios-studio-*-windows-x86_64.exe
+            dist-windows/SHA256SUMS-windows
+          if-no-files-found: error

@@ -1,0 +1,9 @@
+# Development and CI dependencies.  Install with an explicit index:
+#   python -m pip install --index-url https://pypi.org/simple -r tools/requirements-dev.txt
+# PyGObject is intentionally absent: it is provided by the OS package
+# (python3-gi) and must never be built from source in this project.
+pytest==9.1.1
+ruff==0.17.1
+mypy==2.4.0
+import-linter==2.15
+PyYAML==6.0.3

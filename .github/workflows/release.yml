@@ -1,0 +1,71 @@
+# Tag-driven release: build both platforms through the reusable build workflow,
+# generate SHA256SUMS and attach the artifacts to the GitHub Release.
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+env:
+  PIP_INDEX_URL: https://pypi.org/simple
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+
+  publish:
+    name: publish ${{ github.ref_name }}
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify tag matches the package version
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, os
+          text = pathlib.Path("src/vbios_studio/__init__.py").read_text(encoding="utf-8")
+          match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', text, re.M)
+          version = match.group(1) if match else ""
+          tag = os.environ["GITHUB_REF_NAME"]
+          if tag != f"v{version}":
+              raise SystemExit(f"tag {tag} does not match package version v{version}")
+          print(f"tag {tag} matches package version")
+          PY
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4.3.0
+        with:
+          pattern: vbios-studio-*
+          path: dist
+          merge-multiple: true
+      - name: Generate SHA256SUMS
+        run: |
+          cd dist
+          rm -f SHA256SUMS SHA256SUMS-windows
+          sha256sum vbios-studio-*-linux-x86_64.tar.gz \
+                    vbios-studio-*-windows-x86_64.exe > SHA256SUMS
+          cat SHA256SUMS
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          files=(dist/vbios-studio-*-linux-x86_64.tar.gz
+                 dist/vbios-studio-*-windows-x86_64.exe
+                 dist/SHA256SUMS)
+          if [ -f RELEASE_NOTES.md ]; then
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" \
+              --repo "$GITHUB_REPOSITORY" --title "VBIOS Studio $GITHUB_REF_NAME" \
+              --notes-file RELEASE_NOTES.md
+          else
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" \
+              --repo "$GITHUB_REPOSITORY" --title "VBIOS Studio $GITHUB_REF_NAME" \
+              --notes "测试不完全 / 未在真实硬件验证。See README.md for the support matrix and safety boundaries."
+          fi
