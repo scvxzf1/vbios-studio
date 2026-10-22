@@ -47,6 +47,16 @@ from tools.checks.repo_hygiene import (  # noqa: E402
 )
 
 IMAGE_SUFFIXES = frozenset({".png", ".jpg", ".jpeg", ".gif", ".ico", ".webp"})
+CATALOG_SUFFIXES = frozenset({".mo"})
+
+
+def _binary_note(suffix: str) -> str:
+    """Describe a known, expected binary asset."""
+    if suffix in IMAGE_SUFFIXES:
+        return "界面截图（预期资产）"
+    if suffix in CATALOG_SUFFIXES:
+        return "编译后的 gettext 翻译目录（预期资产）"
+    return "需人工确认"
 
 
 @dataclass(frozen=True, slots=True)
@@ -170,7 +180,7 @@ def render_text(report: AuditReport) -> str:
     ]
     for path, size in report.binaries:
         suffix = path.suffix.lower()
-        note = " (image asset, expected)" if suffix in IMAGE_SUFFIXES else ""
+        note = f" ({_binary_note(suffix)})" if suffix in IMAGE_SUFFIXES | CATALOG_SUFFIXES else ""
         lines.append(f"  - {_relative(path, root)} ({size:,} bytes){note}")
     if not report.binaries:
         lines.append("  - 无")
@@ -231,8 +241,7 @@ def render_markdown(report: AuditReport) -> str:
     if report.binaries:
         lines += ["| 文件 | 大小 | 说明 |", "| --- | ---: | --- |"]
         for path, size in report.binaries:
-            suffix = path.suffix.lower()
-            note = "界面截图（预期资产）" if suffix in IMAGE_SUFFIXES else "需人工确认"
+            note = _binary_note(path.suffix.lower())
             lines.append(f"| `{_relative(path, root)}` | {size:,} bytes | {note} |")
     else:
         lines.append("无。")
