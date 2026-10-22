@@ -12,8 +12,8 @@ GNU General Public License v3.0 or later（GPL-3.0-or-later）发布，完整许
 
 | 上游项目 | 仓库 | 当前 pin | 许可证 | 使用方式 |
 | --- | --- | --- | --- | --- |
-| NVIDIA VBIOS Vix Editor | <https://github.com/Panchovix/nvidia-vbios-vix-editor> | `1f8ee665bd175bd9ede367e6d15308f837bd987b`（v0.1.28） | GPL-3.0 | `src/nvidia_vbios/` 为逐字节只读镜像；本项目的 domain/adapters 通过公开 API 桥接 |
-| NVIDIA Windows VBIOS Vix Loader | <https://github.com/Panchovix/nvidia-windows-vbios-vix-loader> | `ec7bdfe317d3a52de160d17d2bb80ff20813596e`（v0.3.1-6） | GPL-3.0 | 注册表 override 协议参考；不直接 import、不 vendored |
+| NVIDIA VBIOS Vix Editor | <https://github.com/Panchovix/nvidia-vbios-vix-editor> | `1f8ee665bd175bd9ede367e6d15308f837bd987b`（v0.1.28） | GPL-3.0-or-later | `src/nvidia_vbios/` 为逐字节只读镜像；本项目的 domain/adapters 通过公开 API 桥接 |
+| NVIDIA Windows VBIOS Vix Loader | <https://github.com/Panchovix/nvidia-windows-vbios-vix-loader> | `ec7bdfe317d3a52de160d17d2bb80ff20813596e`（v0.3.1-6） | GPL-3.0-or-later | 注册表 override 协议参考；不直接 import、不 vendored |
 
 上游作者：panchovix。上游代码的版权归其原作者所有；本项目对上游代码的
 再分发遵循 GPL-3.0-or-later。上游同步流程与 pin 校验命令见
