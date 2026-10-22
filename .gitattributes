@@ -1,0 +1,32 @@
+# Normalise text files to LF in the repository and in working trees on all
+# platforms; Windows builds consume the same sources as Linux.
+* text=auto eol=lf
+
+*.py       text diff=python
+*.md       text
+*.toml     text
+*.yml      text
+*.yaml     text
+*.sh       text eol=lf
+*.desktop  text eol=lf
+*.po       text eol=lf
+*.pot      text eol=lf
+LICENSE    text
+NOTICE.md  text
+.gitignore text
+.gitattributes text
+
+# Binary assets must never be line-ending converted or shown as text diffs.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.rom  binary
+*.bin  binary
+*.exe  binary
+*.dll  binary
+*.sys  binary
+*.efi  binary
+*.vbi  binary
+*.fv   binary

@@ -1,0 +1,152 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vbios-studio"
+version = "0.1.0"
+description = "GTK4 NVIDIA VBIOS editor and controlled loader-override suite"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "VBIOS Studio contributors" }]
+keywords = ["nvidia", "vbios", "gtk4", "rom", "overclocking"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: X11 Applications :: GTK",
+  "Intended Audience :: Advanced End Users",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: System :: Hardware",
+]
+# Runtime core is standard-library only. PyGObject is an optional extra so that
+# `pip install -e .` works on machines without GTK development files.
+dependencies = []
+
+[project.optional-dependencies]
+gtk = ["PyGObject>=3.42; sys_platform == 'linux'"]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6",
+  "mypy>=1.10",
+  "import-linter>=2.1",
+]
+
+[project.scripts]
+vbios-studio = "vbios_studio.app.cli:main"
+vbios-studio-gui = "vbios_studio.app.gui:main"
+
+[project.urls]
+Repository = "https://github.com/scvxzf1/vbios-studio"
+Upstream = "https://github.com/Panchovix/nvidia-vbios-vix-editor"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["vbios_studio*", "nvidia_vbios*"]
+
+[tool.setuptools.package-data]
+vbios_studio = ["README.md", "**/README.md"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["src/nvidia_vbios"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/vbios_studio"]
+mypy_path = "src"
+exclude = ["^src/nvidia_vbios/"]
+
+[[tool.mypy.overrides]]
+module = ["gi", "gi.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+
+[tool.importlinter]
+root_packages = ["vbios_studio"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "domain-pure"
+type = "forbidden"
+source_modules = ["vbios_studio.domain"]
+forbidden_modules = [
+  "gi",
+  "nvidia_vbios",
+  "vbios_studio.adapters",
+  "vbios_studio.ui",
+  "vbios_studio.app",
+  "vbios_studio.ports",
+  "subprocess",
+  "winreg",
+]
+
+[[tool.importlinter.contracts]]
+name = "ui-no-adapters"
+type = "forbidden"
+source_modules = ["vbios_studio.ui"]
+forbidden_modules = [
+  "nvidia_vbios",
+  "vbios_studio.adapters",
+  "subprocess",
+  "winreg",
+]
+
+[[tool.importlinter.contracts]]
+name = "ports-no-implementations"
+type = "forbidden"
+source_modules = ["vbios_studio.ports"]
+forbidden_modules = [
+  "gi",
+  "nvidia_vbios",
+  "vbios_studio.adapters",
+  "vbios_studio.ui",
+  "vbios_studio.app",
+  "subprocess",
+  "winreg",
+]
+
+[[tool.importlinter.contracts]]
+name = "layers-app-top"
+type = "layers"
+layers = [
+  "vbios_studio.app",
+  "vbios_studio.ui",
+  "vbios_studio.adapters",
+  "vbios_studio.ports",
+  "vbios_studio.domain",
+]
+
+[[tool.importlinter.contracts]]
+name = "i18n-standalone"
+type = "forbidden"
+source_modules = ["vbios_studio.i18n"]
+forbidden_modules = [
+  "gi",
+  "nvidia_vbios",
+  "vbios_studio.adapters",
+  "vbios_studio.ui",
+  "vbios_studio.app",
+  "vbios_studio.ports",
+  "subprocess",
+  "winreg",
+]
