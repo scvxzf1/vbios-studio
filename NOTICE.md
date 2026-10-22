@@ -50,8 +50,9 @@ ROM 全部由 `tests/core/rom_fixtures.py` 在运行时合成，不含真实硬�
 - Linux：PyGObject 与 GTK 4 由发行版软件包提供（LGPL-2.1-or-later），本项目
   不静态链接、不修改它们；分发 tar.gz 只包含本项目 Python 代码与启动器。
 - Windows：单文件 exe 由 Nuitka 构建，内含 MSYS2 UCRT64 提供的 GTK 4 /
-  PyGObject 运行时（LGPL-2.1-or-later）及各自依赖。对应许可证文本随构建工程的
-  第三方声明流程提供；GTK/PyGObject 以可替换的独立文件形式解包。
+  PyGObject 运行时（LGPL-2.1-or-later）及各自依赖。对应许可证文本由 MSYS2
+  软件包在其 `share/licenses/` 目录中提供；GTK/PyGObject 在 exe 内以可替换的
+  独立文件形式解包，用户可替换为修改版本。
 - 开发与 CI 依赖（pytest、ruff、mypy、import-linter、PyYAML）均为各自作者的
   开源软件，仅用于开发与测试，不进入运行时分发包。
 
