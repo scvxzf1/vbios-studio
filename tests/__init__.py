@@ -1,0 +1,1 @@
+"""VBIOS Studio test suite."""
