@@ -1,0 +1,879 @@
+# English translations for VBIOS Studio.
+# Copyright (C) 2026 VBIOS Studio contributors
+# This file is distributed under the same license as the VBIOS Studio project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: VBIOS Studio 0.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-23 01:11+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <noreply@example.invalid>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+msgid "about.comments"
+msgstr ""
+"Offline NVIDIA VBIOS editor with T0–T3 risk levels, presets, ROM comparison and controlled loader overrides.\n"
+"\n"
+"⚠ Testing is incomplete: this project has not been validated on real GPUs; any write can damage hardware."
+
+msgid "about.upstream"
+msgstr "Upstream projects"
+
+msgid "app.title"
+msgstr "VBIOS Studio"
+
+msgid "app.warning_short"
+msgstr "Test incomplete · Not validated on real hardware"
+
+msgid "app.window_title"
+msgstr "{name} — VBIOS Studio"
+
+msgid "apply.confirm.body"
+msgstr "This writes driver registry values and restarts the device. Make sure your work is saved and you understand the risk."
+
+msgid "apply.confirm.checkbox"
+msgstr "I understand and want to continue"
+
+msgid "apply.confirm.title"
+msgstr "Apply the override?"
+
+msgid "apply.device"
+msgstr "Device"
+
+msgid "apply.device.driver"
+msgstr "Driver version"
+
+msgid "apply.device.gpu"
+msgstr "GPU"
+
+msgid "apply.device.override"
+msgstr "Override state"
+
+msgid "apply.device.pci"
+msgstr "PCI bus"
+
+msgid "apply.device.unavailable"
+msgstr "Device status is unavailable"
+
+msgid "apply.dry_run"
+msgstr "Dry-run preview"
+
+msgid "apply.dry_run_done"
+msgstr "Dry-run complete: nothing was written."
+
+msgid "apply.execute"
+msgstr "Apply"
+
+msgid "apply.not_run"
+msgstr "Not run yet."
+
+msgid "apply.override.no_override"
+msgstr "No override"
+
+msgid "apply.override.override_active"
+msgstr "Override active"
+
+msgid "apply.override.override_not_active"
+msgstr "Override not active"
+
+msgid "apply.override.unknown"
+msgstr "Unknown"
+
+msgid "apply.preview"
+msgstr "Preview"
+
+msgid "apply.preview.action"
+msgstr "Action"
+
+msgid "apply.preview.bytes"
+msgstr "Bytes written"
+
+msgid "apply.preview.restart"
+msgstr "Restart required"
+
+msgid "apply.preview.target"
+msgstr "Target"
+
+msgid "apply.refresh"
+msgstr "Refresh"
+
+msgid "apply.restore"
+msgstr "Restore"
+
+msgid "apply.restore_confirm.body"
+msgstr "This removes the override, restores the driver state from before the first load and restarts the device."
+
+msgid "apply.restore_confirm.title"
+msgstr "Restore the previous state?"
+
+msgid "apply.title"
+msgstr "Apply & flash"
+
+msgid "apply.verify"
+msgstr "Verify"
+
+msgid "apply.verify_state"
+msgstr "Current override state: {state}"
+
+msgid "apply.warning"
+msgstr ""
+"⚠ Applying only makes the driver load the new image through a Windows registry or Linux loader override; it never "
+"writes the GPU flash chip. Never flash a modified image with nvflash."
+
+msgid "badge.experimental"
+msgstr "experimental"
+
+msgid "badge.experimental.tooltip"
+msgstr "Marked experimental / not validated on hardware upstream"
+
+msgid "common.cancel"
+msgstr "Cancel"
+
+msgid "common.close"
+msgstr "Close"
+
+msgid "common.confirm"
+msgstr "Confirm"
+
+msgid "common.no"
+msgstr "No"
+
+msgid "common.unknown"
+msgstr "Unknown"
+
+msgid "common.yes"
+msgstr "Yes"
+
+msgid "dialog.filter.all"
+msgstr "All files"
+
+msgid "dialog.filter.rom"
+msgstr "VBIOS images (*.rom, *.bin)"
+
+msgid "dialog.open.title"
+msgstr "Open a VBIOS image"
+
+msgid "dialog.save.title"
+msgstr "Save a new VBIOS"
+
+msgid "diff.choose"
+msgstr "Choose a ROM to compare…"
+
+msgid "diff.column.checksum_left"
+msgstr "Left checksum"
+
+msgid "diff.column.checksum_right"
+msgstr "Right checksum"
+
+msgid "diff.column.equal"
+msgstr "Equal"
+
+msgid "diff.column.field"
+msgstr "Field"
+
+msgid "diff.column.index"
+msgstr "Index"
+
+msgid "diff.column.left"
+msgstr "Left"
+
+msgid "diff.column.right"
+msgstr "Right"
+
+msgid "diff.column.risk"
+msgstr "Risk"
+
+msgid "diff.column.size"
+msgstr "Size"
+
+msgid "diff.column.status"
+msgstr "Status"
+
+msgid "diff.column.type"
+msgstr "Type"
+
+msgid "diff.empty_hint"
+msgstr "Open another ROM to compare field and image-chain differences."
+
+msgid "diff.error.title"
+msgstr "Comparison failed"
+
+msgid "diff.fields"
+msgstr "Field differences"
+
+msgid "diff.identical"
+msgstr "The two ROMs are identical."
+
+msgid "diff.images"
+msgstr "Image differences"
+
+msgid "diff.open"
+msgstr "Compare with another ROM…"
+
+msgid "diff.status.different"
+msgstr "Different"
+
+msgid "diff.status.left_only"
+msgstr "Left only"
+
+msgid "diff.status.right_only"
+msgstr "Right only"
+
+msgid "diff.status.same"
+msgstr "Same"
+
+msgid "diff.summary"
+msgstr "{fields} field differences and {images} image differences."
+
+msgid "diff.title"
+msgstr "ROM comparison"
+
+msgid "drop.error.title"
+msgstr "Could not open the dropped item"
+
+msgid "edit.error.title"
+msgstr "Edit rejected"
+
+msgid "edit.reset"
+msgstr "Discard all changes"
+
+msgid "empty.open"
+msgstr "Open a file…"
+
+msgid "empty.subtitle"
+msgstr "or drop a VBIOS file onto this window. NVIDIA Blackwell, Ada, Ampere and Turing images are supported."
+
+msgid "empty.support"
+msgstr "Supported architectures"
+
+msgid "empty.support.experimental"
+msgstr "Experimental"
+
+msgid "empty.support.full"
+msgstr "Full support"
+
+msgid "empty.support.readonly"
+msgstr "Read-only structure report"
+
+msgid "empty.title"
+msgstr "Drop a VBIOS file here"
+
+msgid "empty.warning"
+msgstr ""
+"⚠ Testing is incomplete and this project has not been validated on real hardware. Your original file is never "
+"modified; saving always creates a new file."
+
+msgid "error.copy"
+msgstr "Copy details"
+
+msgid "error.details"
+msgstr "Error details"
+
+msgid "experimental.body"
+msgstr ""
+"Experimental fields change voltages, currents, power limits or protection thresholds and can permanently damage "
+"hardware. After enabling, every T3 write still requires a per-field confirmation."
+
+msgid "experimental.checkbox"
+msgstr "I understand the risks of experimental fields"
+
+msgid "experimental.enable"
+msgstr "Enable experimental mode"
+
+msgid "experimental.title"
+msgstr "Enable experimental fields"
+
+msgid "experimental.word"
+msgstr "Type ENABLE to continue"
+
+msgid "field.board_fixed_rated_w"
+msgstr "Fixed board policies 2/7 rated power (advanced, XOC-style, experimental)"
+
+msgid "field.clock_domain_max"
+msgstr "{domain} offset ceiling (experimental)"
+
+msgid "field.clock_domain_min"
+msgstr "{domain} offset floor (experimental)"
+
+msgid "field.connector_current_threshold_max"
+msgstr "Connector channel {connector} current threshold ceiling (advanced, experimental)"
+
+msgid "field.connector_current_threshold_rated"
+msgstr "Connector channel {connector} current threshold, rated (advanced, experimental)"
+
+msgid "field.connector_power_max"
+msgstr "Connector power channel {connector} ceiling (experimental)"
+
+msgid "field.connector_power_rated"
+msgstr "Connector power channel {connector} limit, rated (experimental)"
+
+msgid "field.connector_sum_power_max_w"
+msgstr "Connector power sum ceiling (experimental)"
+
+msgid "field.connector_sum_power_rated_w"
+msgstr "Connector power sum limit, rated (experimental)"
+
+msgid "field.current_limit_a"
+msgstr "Input current limit"
+
+msgid "field.dram_max_table_mhz"
+msgstr "Memory offset ceiling (table)"
+
+msgid "field.dram_min_table_mhz"
+msgstr "Memory offset floor (table, experimental)"
+
+msgid "field.equation"
+msgstr "{rail} {role} equation ceiling"
+
+msgid "field.factory_gpc_offset_mhz"
+msgstr "Factory GPC offset (vendor overclock, experimental)"
+
+msgid "field.factory_rated_boost_mhz"
+msgstr "Factory rated boost clock"
+
+msgid "field.fan_channels"
+msgstr "Fan channels (experimental)"
+
+msgid "field.fan_curve_pct"
+msgstr "Fan {fan} curve point {point} level (advanced, experimental)"
+
+msgid "field.fan_curve_rpm"
+msgstr "Fan {fan} curve point {point} speed (experimental)"
+
+msgid "field.fan_curve_temp_c"
+msgstr "Fan {fan} curve point {point} temperature (experimental)"
+
+msgid "field.fan_extra_curve_pct"
+msgstr "Extra fan curve {curve} point {point} level (advanced, experimental)"
+
+msgid "field.fan_extra_curve_rpm"
+msgstr "Extra fan curve {curve} point {point} speed (experimental)"
+
+msgid "field.fan_extra_curve_temp_c"
+msgstr "Extra fan curve {curve} point {point} temperature (experimental)"
+
+msgid "field.fan_extra_zero_rpm_high_temp_c"
+msgstr "Extra fan curve {curve} zero RPM upper threshold (advanced, experimental)"
+
+msgid "field.fan_extra_zero_rpm_low_temp_c"
+msgstr "Extra fan curve {curve} zero RPM lower threshold (advanced, experimental)"
+
+msgid "field.fan_max_pct"
+msgstr "Fan {fan} maximum level (advanced, experimental)"
+
+msgid "field.fan_max_rpm"
+msgstr "Fan {fan} maximum speed (experimental)"
+
+msgid "field.fan_min_pct"
+msgstr "Fan {fan} minimum level (advanced, experimental)"
+
+msgid "field.fan_min_rpm"
+msgstr "Fan {fan} minimum speed (experimental)"
+
+msgid "field.fan_pwm_frequency_hz"
+msgstr "Fan PWM frequency (experimental)"
+
+msgid "field.fan_zero_rpm"
+msgstr "Fan zero RPM (advanced, experimental)"
+
+msgid "field.fan_zero_rpm_high_temp_c"
+msgstr "Fan {fan} zero RPM upper threshold (advanced, experimental)"
+
+msgid "field.fan_zero_rpm_low_temp_c"
+msgstr "Fan {fan} zero RPM lower threshold (advanced, experimental)"
+
+msgid "field.fixed"
+msgstr "{rail} {role} fixed voltage (experimental)"
+
+msgid "field.gpc_curve_offset_mhz"
+msgstr "GPC curve offset (advanced, experimental)"
+
+msgid "field.gpc_offset_max_mhz"
+msgstr "Core (GPC) offset ceiling (experimental)"
+
+msgid "field.gpc_offset_min_mhz"
+msgstr "Core (GPC) offset floor (experimental)"
+
+msgid "field.input_current_max_ma"
+msgstr "12 V input current ceiling (experimental)"
+
+msgid "field.input_current_policy7_limit_ma"
+msgstr "Policy 7 limit linked to 12 V input (experimental)"
+
+msgid "field.input_current_rated_ma"
+msgstr "12 V input current limit, rated (experimental)"
+
+msgid "field.lpwr_difr"
+msgstr "DIFR idle display power saving (experimental)"
+
+msgid "field.lpwr_difr_cg_idle_us"
+msgstr "DIFR clock gating idle time (experimental)"
+
+msgid "field.lpwr_difr_dfpr_idle_ms"
+msgstr "DIFR DFPR idle time (experimental)"
+
+msgid "field.lpwr_difr_sw_asr_idle_us"
+msgstr "DIFR SW-ASR idle time (experimental)"
+
+msgid "field.lpwr_gr_power_gating"
+msgstr "GR power gating (experimental)"
+
+msgid "field.lpwr_gr_rail_gating"
+msgstr "GR rail gating (experimental)"
+
+msgid "field.lpwr_gr_rail_gating_idle_us"
+msgstr "GR rail gating idle time (10 µs steps, experimental)"
+
+msgid "field.lpwr_mscg"
+msgstr "Memory system clock gating, MSCG (experimental)"
+
+msgid "field.lpwr_nvdec_gating"
+msgstr "NVDEC power gating (experimental)"
+
+msgid "field.lpwr_nvenc_gating"
+msgstr "NVENC power gating (experimental)"
+
+msgid "field.lpwr_nvjpg_gating"
+msgstr "NVJPG power gating (experimental)"
+
+msgid "field.lpwr_ofa_gating"
+msgstr "OFA power gating (experimental)"
+
+msgid "field.max_operating_temp_c"
+msgstr "Max operating temperature (experimental)"
+
+msgid "field.memory_offset_max_mhz"
+msgstr "Memory offset ceiling"
+
+msgid "field.memory_offset_min_mhz"
+msgstr "Memory offset floor (experimental)"
+
+msgid "field.memory_point_follows_offset"
+msgstr "Memory clock point {point} follows the memory offset (advanced, experimental)"
+
+msgid "field.msvdd_rel_max_mv"
+msgstr "MSVDD REL ceiling"
+
+msgid "field.nvvdd_power_threshold_max_w"
+msgstr "NVVDD output power threshold ceiling (advanced, experimental)"
+
+msgid "field.nvvdd_power_threshold_rated_w"
+msgstr "NVVDD output power threshold, rated (advanced, experimental)"
+
+msgid "field.nvvdd_rel_alt_follow_ov"
+msgstr "NVVDD REL and ALT follow OV (XOC-style flat voltage limit; advanced, experimental)"
+
+msgid "field.nvvdd_rel_max_mv"
+msgstr "NVVDD REL ceiling"
+
+msgid "field.ocp_limit_a"
+msgstr "Overcurrent protection (OCP)"
+
+msgid "field.output_ocp"
+msgstr "{rail} output OCP current ceiling"
+
+msgid "field.output_ocp_rated"
+msgstr "{rail} output OCP current limit, rated (experimental)"
+
+msgid "field.perf_cf_hysteresis_down"
+msgstr "{domain} clock-down hysteresis (samples, experimental)"
+
+msgid "field.perf_cf_hysteresis_up"
+msgstr "{domain} clock-up hysteresis (samples, experimental)"
+
+msgid "field.perf_cf_jump_pct"
+msgstr "{domain} jump threshold (experimental)"
+
+msgid "field.perf_cf_target_pct"
+msgstr "{domain} utilization target (experimental)"
+
+msgid "field.perf_cf_util_policy"
+msgstr "Utilization clock policy (experimental)"
+
+msgid "field.power_default_w"
+msgstr "Boot default board power (experimental)"
+
+msgid "field.power_max_w"
+msgstr "Board power ceiling"
+
+msgid "field.power_min_w"
+msgstr "Board power floor"
+
+msgid "field.slot_current_threshold_max_ma"
+msgstr "PCIe slot current threshold ceiling (advanced, experimental)"
+
+msgid "field.slot_current_threshold_rated_ma"
+msgstr "PCIe slot current threshold, rated (advanced, experimental)"
+
+msgid "field.slot_power_max_w"
+msgstr "PCIe slot power ceiling (experimental)"
+
+msgid "field.slot_power_rated_w"
+msgstr "PCIe slot power limit, rated (experimental)"
+
+msgid "field.vmin"
+msgstr "{rail} minimum voltage (VMIN, experimental)"
+
+msgid "field.vmin_slot"
+msgstr "{rail} rail INFO VMIN-slot equation ceiling (not the evaluated VMIN)"
+
+msgid "fields.column.current"
+msgstr "Current"
+
+msgid "fields.column.default"
+msgstr "Default"
+
+msgid "fields.column.field"
+msgstr "Field"
+
+msgid "fields.column.offset"
+msgstr "Offset"
+
+msgid "fields.column.range"
+msgstr "Range"
+
+msgid "fields.column.risk"
+msgstr "Risk"
+
+msgid "fields.column.unit"
+msgstr "Unit"
+
+msgid "fields.count"
+msgstr "Field count"
+
+msgid "fields.count_value"
+msgstr "Showing {shown} of {total} fields"
+
+msgid "fields.default_hint"
+msgstr "Default {value} {unit}"
+
+msgid "fields.filter"
+msgstr "Filters"
+
+msgid "fields.filter.active"
+msgstr "Filters ({count})"
+
+msgid "fields.filter.modified"
+msgstr "Only modified"
+
+msgid "fields.filter.reset"
+msgstr "Reset filters"
+
+msgid "fields.filter.section"
+msgstr "Only current section"
+
+msgid "fields.filter.t3"
+msgstr "Only experimental T3"
+
+msgid "fields.filter.tooltip"
+msgstr "Search and filter fields"
+
+msgid "fields.modified"
+msgstr "modified"
+
+msgid "fields.not_available"
+msgstr "Not available"
+
+msgid "fields.title"
+msgstr "Fields"
+
+msgid "fields.view.form"
+msgstr "Form"
+
+msgid "fields.view.table"
+msgstr "Table"
+
+msgid "file.architecture"
+msgstr "Architecture"
+
+msgid "file.board_build_line"
+msgstr "Board {board} · built {build}"
+
+msgid "file.chain.balanced"
+msgstr "balanced"
+
+msgid "file.chain.checksum"
+msgstr "8-bit sum"
+
+msgid "file.chain.index"
+msgstr "Index"
+
+msgid "file.chain.last"
+msgstr "Last"
+
+msgid "file.chain.offset"
+msgstr "Offset"
+
+msgid "file.chain.size"
+msgstr "Size"
+
+msgid "file.chain.type"
+msgstr "Type"
+
+msgid "file.chain.unbalanced"
+msgstr "unbalanced"
+
+msgid "file.identity"
+msgstr "File identity"
+
+msgid "file.identity_line"
+msgstr "PCI {pci} · VBIOS {bios}"
+
+msgid "file.product"
+msgstr "Product"
+
+msgid "file.sha256"
+msgstr "SHA-256 and file size"
+
+msgid "file.sha256_line"
+msgstr "SHA-256 {sha} · {size}"
+
+msgid "help.about"
+msgstr "About VBIOS Studio"
+
+msgid "help.experimental"
+msgstr "Enable experimental fields…"
+
+msgid "help.shortcuts"
+msgstr "Keyboard shortcuts"
+
+msgid "log.clear"
+msgstr "Clear"
+
+msgid "log.copy"
+msgstr "Copy"
+
+msgid "log.empty"
+msgstr "No log entries yet."
+
+msgid "log.show"
+msgstr "Log"
+
+msgid "log.title"
+msgstr "Log"
+
+msgid "log.toggle_tooltip"
+msgstr "Show or hide the log panel"
+
+msgid "open.error.title"
+msgstr "Could not open the ROM"
+
+msgid "profile.applied"
+msgstr "Preset applied"
+
+msgid "profile.error.title"
+msgstr "Preset operation failed"
+
+msgid "profile.load"
+msgstr "Load preset…"
+
+msgid "profile.save"
+msgstr "Save preset…"
+
+msgid "profile.saved"
+msgstr "Preset saved"
+
+msgid "risk.t0"
+msgstr "T0 Read-only"
+
+msgid "risk.t1"
+msgstr "T1 Low"
+
+msgid "risk.t2"
+msgstr "T2 Medium"
+
+msgid "risk.t3"
+msgstr "T3 High"
+
+msgid "risk.unknown"
+msgstr "Unknown risk"
+
+msgid "save.error.title"
+msgstr "Save failed"
+
+msgid "save.success"
+msgstr "Saved to {path}"
+
+msgid "save.warning.body"
+msgstr ""
+"This is a modified image. Never flash it with nvflash; apply it only through a Windows registry or Linux loader "
+"override."
+
+msgid "save.warning.title"
+msgstr "Saved — flashing restriction"
+
+msgid "section.advanced"
+msgstr "Experimental / advanced"
+
+msgid "section.apply"
+msgstr "Apply & flash"
+
+msgid "section.clocks"
+msgstr "Clocks"
+
+msgid "section.current"
+msgstr "Current protection"
+
+msgid "section.diff"
+msgstr "ROM compare"
+
+msgid "section.fans"
+msgstr "Fans"
+
+msgid "section.info"
+msgstr "Overview"
+
+msgid "section.log"
+msgstr "Log"
+
+msgid "section.memory"
+msgstr "Memory (read-only)"
+
+msgid "section.power"
+msgstr "Power"
+
+msgid "section.voltage"
+msgstr "Voltage"
+
+msgid "shortcut.close"
+msgstr "Close window"
+
+msgid "shortcut.log"
+msgstr "Show / hide log"
+
+msgid "shortcut.open"
+msgstr "Open ROM"
+
+msgid "shortcut.redo"
+msgstr "Redo"
+
+msgid "shortcut.save"
+msgstr "Save as new VBIOS"
+
+msgid "shortcut.search"
+msgstr "Focus search"
+
+msgid "shortcut.undo"
+msgstr "Undo"
+
+msgid "sidebar.image_count"
+msgstr "{count} × image"
+
+msgid "sidebar.navigation"
+msgstr "Navigation"
+
+msgid "sidebar.no_document"
+msgstr "No ROM open"
+
+msgid "sidebar.open_hint"
+msgstr "Open or drop a ROM to begin"
+
+msgid "status.architecture"
+msgstr "Architecture"
+
+msgid "status.checksums"
+msgstr "Checksums"
+
+msgid "status.checksums_bad"
+msgstr "✗ some images are unbalanced"
+
+msgid "status.checksums_ok"
+msgstr "✓ all images balanced"
+
+msgid "status.file"
+msgstr "File"
+
+msgid "status.no_architecture"
+msgstr "—"
+
+msgid "status.no_changes"
+msgstr "No unsaved changes"
+
+msgid "status.no_document"
+msgstr "No document open"
+
+msgid "status.no_file"
+msgstr "No file open"
+
+msgid "status.unsaved"
+msgstr "{count} unsaved changes"
+
+msgid "status.unsaved_one"
+msgstr "{count} unsaved change"
+
+msgid "t3.confirm.accept"
+msgstr "Write this field"
+
+msgid "t3.confirm.body"
+msgstr ""
+"Field: {field}\n"
+"Change: {old} → {new} {unit}\n"
+"\n"
+"This is a T3 high-risk field. It can cause permanent, unrecoverable hardware damage."
+
+msgid "t3.confirm.checkbox"
+msgstr "I understand the risk of this change"
+
+msgid "t3.confirm.title"
+msgstr "Confirm high-risk change"
+
+msgid "t3.confirm.word"
+msgstr "Type CONFIRM to continue"
+
+msgid "t3.locked"
+msgstr "Experimental fields are still locked."
+
+msgid "t3.locked.hint"
+msgstr "Complete the risk acknowledgement in Help → Enable experimental fields."
+
+msgid "theme.dark"
+msgstr "Dark"
+
+msgid "theme.light"
+msgstr "Light"
+
+msgid "theme.system"
+msgstr "Follow system"
+
+msgid "toolbar.help.tooltip"
+msgstr "Help and shortcuts"
+
+msgid "toolbar.language"
+msgstr "Language"
+
+msgid "toolbar.language.tooltip"
+msgstr "Change language"
+
+msgid "toolbar.menu.tooltip"
+msgstr "More actions"
+
+msgid "toolbar.open.tooltip"
+msgstr "Open ROM (Ctrl+O)"
+
+msgid "toolbar.redo.tooltip"
+msgstr "Redo (Ctrl+Y / Ctrl+Shift+Z)"
+
+msgid "toolbar.save.tooltip"
+msgstr "Save as new VBIOS (Ctrl+Shift+S)"
+
+msgid "toolbar.search.placeholder"
+msgstr "Search fields…"
+
+msgid "toolbar.theme"
+msgstr "Theme"
+
+msgid "toolbar.theme.tooltip"
+msgstr "Change theme"
+
+msgid "toolbar.undo.tooltip"
+msgstr "Undo (Ctrl+Z)"
+

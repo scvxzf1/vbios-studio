@@ -1,0 +1,864 @@
+# Chinese (Simplified, China) translations for VBIOS Studio.
+# Copyright (C) 2026 VBIOS Studio contributors
+# This file is distributed under the same license as the VBIOS Studio project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: VBIOS Studio 0.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-23 01:11+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <noreply@example.invalid>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+msgid "about.comments"
+msgstr "离线 NVIDIA VBIOS 编辑器，支持 T0–T3 风险分级、预设、ROM 差异对比与受控的 loader override。\\n\\n⚠ 测试不完全：本项目未在真实 GPU 上验证，任何写入都可能导致硬件损坏。"
+
+msgid "about.upstream"
+msgstr "上游项目"
+
+msgid "app.title"
+msgstr "VBIOS Studio"
+
+msgid "app.warning_short"
+msgstr "测试不完全 · 未在真实硬件验证"
+
+msgid "app.window_title"
+msgstr "{name} — VBIOS Studio"
+
+msgid "apply.confirm.body"
+msgstr "这会写入驱动注册表项并重启设备。请确认已保存工作并理解风险。"
+
+msgid "apply.confirm.checkbox"
+msgstr "我已理解并确认执行"
+
+msgid "apply.confirm.title"
+msgstr "执行应用？"
+
+msgid "apply.device"
+msgstr "设备"
+
+msgid "apply.device.driver"
+msgstr "驱动版本"
+
+msgid "apply.device.gpu"
+msgstr "GPU"
+
+msgid "apply.device.override"
+msgstr "Override 状态"
+
+msgid "apply.device.pci"
+msgstr "PCI 总线"
+
+msgid "apply.device.unavailable"
+msgstr "无法读取设备状态"
+
+msgid "apply.dry_run"
+msgstr "Dry-run 预览"
+
+msgid "apply.dry_run_done"
+msgstr "Dry-run 完成：未写入任何内容。"
+
+msgid "apply.execute"
+msgstr "执行应用"
+
+msgid "apply.not_run"
+msgstr "尚未执行。"
+
+msgid "apply.override.no_override"
+msgstr "无 override"
+
+msgid "apply.override.override_active"
+msgstr "Override 已生效"
+
+msgid "apply.override.override_not_active"
+msgstr "Override 未生效"
+
+msgid "apply.override.unknown"
+msgstr "未知"
+
+msgid "apply.preview"
+msgstr "预览"
+
+msgid "apply.preview.action"
+msgstr "动作"
+
+msgid "apply.preview.bytes"
+msgstr "写入字节"
+
+msgid "apply.preview.restart"
+msgstr "需要重启设备"
+
+msgid "apply.preview.target"
+msgstr "目标"
+
+msgid "apply.refresh"
+msgstr "刷新"
+
+msgid "apply.restore"
+msgstr "还原"
+
+msgid "apply.restore_confirm.body"
+msgstr "这会删除 override 并恢复首次加载前的驱动状态，然后重启设备。"
+
+msgid "apply.restore_confirm.title"
+msgstr "还原驱动状态？"
+
+msgid "apply.title"
+msgstr "应用与刷写"
+
+msgid "apply.verify"
+msgstr "校验状态"
+
+msgid "apply.verify_state"
+msgstr "当前 override 状态：{state}"
+
+msgid "apply.warning"
+msgstr "⚠ 应用只会通过 Windows 注册表或 Linux loader override 让驱动加载新镜像，不写显卡 flash。修改后的镜像禁止用 nvflash 刷写。"
+
+msgid "badge.experimental"
+msgstr "实验性"
+
+msgid "badge.experimental.tooltip"
+msgstr "上游标记为实验性/未在硬件验证"
+
+msgid "common.cancel"
+msgstr "取消"
+
+msgid "common.close"
+msgstr "关闭"
+
+msgid "common.confirm"
+msgstr "确认"
+
+msgid "common.no"
+msgstr "否"
+
+msgid "common.unknown"
+msgstr "未知"
+
+msgid "common.yes"
+msgstr "是"
+
+msgid "dialog.filter.all"
+msgstr "所有文件"
+
+msgid "dialog.filter.rom"
+msgstr "VBIOS 镜像 (*.rom, *.bin)"
+
+msgid "dialog.open.title"
+msgstr "打开 VBIOS 镜像"
+
+msgid "dialog.save.title"
+msgstr "另存为新 VBIOS"
+
+msgid "diff.choose"
+msgstr "选择对比 ROM…"
+
+msgid "diff.column.checksum_left"
+msgstr "左侧校验和"
+
+msgid "diff.column.checksum_right"
+msgstr "右侧校验和"
+
+msgid "diff.column.equal"
+msgstr "相同"
+
+msgid "diff.column.field"
+msgstr "字段"
+
+msgid "diff.column.index"
+msgstr "序号"
+
+msgid "diff.column.left"
+msgstr "左侧"
+
+msgid "diff.column.right"
+msgstr "右侧"
+
+msgid "diff.column.risk"
+msgstr "风险"
+
+msgid "diff.column.size"
+msgstr "大小"
+
+msgid "diff.column.status"
+msgstr "状态"
+
+msgid "diff.column.type"
+msgstr "类型"
+
+msgid "diff.empty_hint"
+msgstr "打开另一份 ROM 以比较字段与镜像链差异。"
+
+msgid "diff.error.title"
+msgstr "对比失败"
+
+msgid "diff.fields"
+msgstr "字段差异"
+
+msgid "diff.identical"
+msgstr "两份 ROM 完全相同。"
+
+msgid "diff.images"
+msgstr "镜像差异"
+
+msgid "diff.open"
+msgstr "与另一份 ROM 对比…"
+
+msgid "diff.status.different"
+msgstr "不同"
+
+msgid "diff.status.left_only"
+msgstr "仅左侧"
+
+msgid "diff.status.right_only"
+msgstr "仅右侧"
+
+msgid "diff.status.same"
+msgstr "相同"
+
+msgid "diff.summary"
+msgstr "共有 {fields} 个字段差异、{images} 个镜像差异。"
+
+msgid "diff.title"
+msgstr "ROM 差异对比"
+
+msgid "drop.error.title"
+msgstr "无法载入拖放的文件"
+
+msgid "edit.error.title"
+msgstr "编辑被拒绝"
+
+msgid "edit.reset"
+msgstr "放弃全部改动"
+
+msgid "empty.open"
+msgstr "打开文件…"
+
+msgid "empty.subtitle"
+msgstr "或将 VBIOS 文件拖放到此窗口。支持 NVIDIA Blackwell、Ada、Ampere 与 Turing 镜像。"
+
+msgid "empty.support"
+msgstr "支持的架构"
+
+msgid "empty.support.experimental"
+msgstr "实验性支持"
+
+msgid "empty.support.full"
+msgstr "完整支持"
+
+msgid "empty.support.readonly"
+msgstr "只读结构报告"
+
+msgid "empty.title"
+msgstr "拖放 VBIOS 文件到此处"
+
+msgid "empty.warning"
+msgstr "⚠ 本项目测试不完全，未在真实硬件验证。你的原始文件永远不会被修改，保存始终创建新文件。"
+
+msgid "error.copy"
+msgstr "复制详情"
+
+msgid "error.details"
+msgstr "错误详情"
+
+msgid "experimental.body"
+msgstr "实验性字段会改变电压、电流、功耗或保护阈值，可能导致永久硬件损坏。启用后，每个 T3 字段写入前仍需逐字段确认。"
+
+msgid "experimental.checkbox"
+msgstr "我已理解实验性字段的风险"
+
+msgid "experimental.enable"
+msgstr "启用实验模式"
+
+msgid "experimental.title"
+msgstr "启用实验性字段"
+
+msgid "experimental.word"
+msgstr "输入 ENABLE 以继续"
+
+msgid "field.board_fixed_rated_w"
+msgstr "固定 board policy 2/7 额定功耗（高级 XOC，实验性）"
+
+msgid "field.clock_domain_max"
+msgstr "{domain} 偏移上限（实验性）"
+
+msgid "field.clock_domain_min"
+msgstr "{domain} 偏移下限（实验性）"
+
+msgid "field.connector_current_threshold_max"
+msgstr "供电通道 {connector} 电流阈值上限（高级，实验性）"
+
+msgid "field.connector_current_threshold_rated"
+msgstr "供电通道 {connector} 电流阈值额定值（高级，实验性）"
+
+msgid "field.connector_power_max"
+msgstr "供电通道 {connector} 功耗上限（实验性）"
+
+msgid "field.connector_power_rated"
+msgstr "供电通道 {connector} 额定功耗（实验性）"
+
+msgid "field.connector_sum_power_max_w"
+msgstr "供电通道总功耗上限（实验性）"
+
+msgid "field.connector_sum_power_rated_w"
+msgstr "供电通道总功耗额定值（实验性）"
+
+msgid "field.current_limit_a"
+msgstr "输入电流限制"
+
+msgid "field.dram_max_table_mhz"
+msgstr "显存偏移上限（table 单位）"
+
+msgid "field.dram_min_table_mhz"
+msgstr "显存偏移下限（table 单位）"
+
+msgid "field.equation"
+msgstr "{rail} {role} 方程上限"
+
+msgid "field.factory_gpc_offset_mhz"
+msgstr "出厂 GPC 偏移（厂商超频，实验性）"
+
+msgid "field.factory_rated_boost_mhz"
+msgstr "出厂额定加速频率"
+
+msgid "field.fan_channels"
+msgstr "风扇通道数（实验性）"
+
+msgid "field.fan_curve_pct"
+msgstr "风扇 {fan} 曲线点 {point} 电平（高级，实验性）"
+
+msgid "field.fan_curve_rpm"
+msgstr "风扇 {fan} 曲线点 {point} 转速（实验性）"
+
+msgid "field.fan_curve_temp_c"
+msgstr "风扇 {fan} 曲线点 {point} 温度（实验性）"
+
+msgid "field.fan_extra_curve_pct"
+msgstr "额外风扇曲线 {curve} 点 {point} 电平（高级，实验性）"
+
+msgid "field.fan_extra_curve_rpm"
+msgstr "额外风扇曲线 {curve} 点 {point} 转速（实验性）"
+
+msgid "field.fan_extra_curve_temp_c"
+msgstr "额外风扇曲线 {curve} 点 {point} 温度（实验性）"
+
+msgid "field.fan_extra_zero_rpm_high_temp_c"
+msgstr "额外风扇曲线 {curve} 零转速上限温度（高级，实验性）"
+
+msgid "field.fan_extra_zero_rpm_low_temp_c"
+msgstr "额外风扇曲线 {curve} 零转速下限温度（高级，实验性）"
+
+msgid "field.fan_max_pct"
+msgstr "风扇 {fan} 最大电平（高级，实验性）"
+
+msgid "field.fan_max_rpm"
+msgstr "风扇 {fan} 最大转速（实验性）"
+
+msgid "field.fan_min_pct"
+msgstr "风扇 {fan} 最小电平（高级，实验性）"
+
+msgid "field.fan_min_rpm"
+msgstr "风扇 {fan} 最小转速（实验性）"
+
+msgid "field.fan_pwm_frequency_hz"
+msgstr "风扇 PWM 频率（实验性）"
+
+msgid "field.fan_zero_rpm"
+msgstr "风扇零转速（高级，实验性）"
+
+msgid "field.fan_zero_rpm_high_temp_c"
+msgstr "风扇 {fan} 零转速上限温度（高级，实验性）"
+
+msgid "field.fan_zero_rpm_low_temp_c"
+msgstr "风扇 {fan} 零转速下限温度（高级，实验性）"
+
+msgid "field.fixed"
+msgstr "{rail} {role} 固定电压（实验性）"
+
+msgid "field.gpc_curve_offset_mhz"
+msgstr "GPC 曲线偏移（高级，实验性）"
+
+msgid "field.gpc_offset_max_mhz"
+msgstr "核心（GPC）偏移上限（实验性）"
+
+msgid "field.gpc_offset_min_mhz"
+msgstr "核心（GPC）偏移下限（实验性）"
+
+msgid "field.input_current_max_ma"
+msgstr "12 V 输入电流上限（实验性）"
+
+msgid "field.input_current_policy7_limit_ma"
+msgstr "与 12 V 输入联动的 policy 7 限制（实验性）"
+
+msgid "field.input_current_rated_ma"
+msgstr "12 V 输入电流额定值（实验性）"
+
+msgid "field.lpwr_difr"
+msgstr "DIFR 空闲显示省电（实验性）"
+
+msgid "field.lpwr_difr_cg_idle_us"
+msgstr "DIFR 时钟门控空闲时间（实验性）"
+
+msgid "field.lpwr_difr_dfpr_idle_ms"
+msgstr "DIFR DFPR 空闲时间（实验性）"
+
+msgid "field.lpwr_difr_sw_asr_idle_us"
+msgstr "DIFR SW-ASR 空闲时间（实验性）"
+
+msgid "field.lpwr_gr_power_gating"
+msgstr "GR 电源门控（实验性）"
+
+msgid "field.lpwr_gr_rail_gating"
+msgstr "GR rail 门控（实验性）"
+
+msgid "field.lpwr_gr_rail_gating_idle_us"
+msgstr "GR rail 门控空闲时间（10 µs 步进，实验性）"
+
+msgid "field.lpwr_mscg"
+msgstr "存储系统时钟门控 MSCG（实验性）"
+
+msgid "field.lpwr_nvdec_gating"
+msgstr "NVDEC 电源门控（实验性）"
+
+msgid "field.lpwr_nvenc_gating"
+msgstr "NVENC 电源门控（实验性）"
+
+msgid "field.lpwr_nvjpg_gating"
+msgstr "NVJPG 电源门控（实验性）"
+
+msgid "field.lpwr_ofa_gating"
+msgstr "OFA 电源门控（实验性）"
+
+msgid "field.max_operating_temp_c"
+msgstr "最高工作温度（实验性）"
+
+msgid "field.memory_offset_max_mhz"
+msgstr "显存偏移上限"
+
+msgid "field.memory_offset_min_mhz"
+msgstr "显存偏移下限（实验性）"
+
+msgid "field.memory_point_follows_offset"
+msgstr "显存频率点 {point} 跟随偏移（高级，实验性）"
+
+msgid "field.msvdd_rel_max_mv"
+msgstr "MSVDD REL 上限"
+
+msgid "field.nvvdd_power_threshold_max_w"
+msgstr "NVVDD 输出功率阈值上限（高级，实验性）"
+
+msgid "field.nvvdd_power_threshold_rated_w"
+msgstr "NVVDD 输出功率阈值额定值（高级，实验性）"
+
+msgid "field.nvvdd_rel_alt_follow_ov"
+msgstr "NVVDD REL 与 ALT 跟随 OV（XOC 风格固定电压限制；高级，实验性）"
+
+msgid "field.nvvdd_rel_max_mv"
+msgstr "NVVDD REL 上限"
+
+msgid "field.ocp_limit_a"
+msgstr "过流保护（OCP）"
+
+msgid "field.output_ocp"
+msgstr "{rail} 输出 OCP 电流上限"
+
+msgid "field.output_ocp_rated"
+msgstr "{rail} 输出 OCP 电流额定值（实验性）"
+
+msgid "field.perf_cf_hysteresis_down"
+msgstr "{domain} 降频迟滞（采样数，实验性）"
+
+msgid "field.perf_cf_hysteresis_up"
+msgstr "{domain} 升频迟滞（采样数，实验性）"
+
+msgid "field.perf_cf_jump_pct"
+msgstr "{domain} 跳变阈值（实验性）"
+
+msgid "field.perf_cf_target_pct"
+msgstr "{domain} 利用率目标（实验性）"
+
+msgid "field.perf_cf_util_policy"
+msgstr "利用率时钟策略（实验性）"
+
+msgid "field.power_default_w"
+msgstr "启动默认整卡功耗（实验性）"
+
+msgid "field.power_max_w"
+msgstr "整卡功耗上限"
+
+msgid "field.power_min_w"
+msgstr "整卡功耗下限"
+
+msgid "field.slot_current_threshold_max_ma"
+msgstr "PCIe 插槽电流阈值上限（高级，实验性）"
+
+msgid "field.slot_current_threshold_rated_ma"
+msgstr "PCIe 插槽电流阈值额定值（高级，实验性）"
+
+msgid "field.slot_power_max_w"
+msgstr "PCIe 插槽功耗上限（实验性）"
+
+msgid "field.slot_power_rated_w"
+msgstr "PCIe 插槽功耗额定值（实验性）"
+
+msgid "field.vmin"
+msgstr "{rail} 最低电压（VMIN，实验性）"
+
+msgid "field.vmin_slot"
+msgstr "{rail} rail INFO VMIN 槽位方程上限（不是实际 VMIN）"
+
+msgid "fields.column.current"
+msgstr "当前值"
+
+msgid "fields.column.default"
+msgstr "默认值"
+
+msgid "fields.column.field"
+msgstr "字段"
+
+msgid "fields.column.offset"
+msgstr "原始偏移"
+
+msgid "fields.column.range"
+msgstr "范围"
+
+msgid "fields.column.risk"
+msgstr "风险"
+
+msgid "fields.column.unit"
+msgstr "单位"
+
+msgid "fields.count"
+msgstr "字段计数"
+
+msgid "fields.count_value"
+msgstr "显示 {shown} / {total} 个字段"
+
+msgid "fields.default_hint"
+msgstr "默认 {value} {unit}"
+
+msgid "fields.filter"
+msgstr "过滤"
+
+msgid "fields.filter.active"
+msgstr "过滤（{count}）"
+
+msgid "fields.filter.modified"
+msgstr "仅已修改"
+
+msgid "fields.filter.reset"
+msgstr "重置过滤"
+
+msgid "fields.filter.section"
+msgstr "仅当前分区"
+
+msgid "fields.filter.t3"
+msgstr "仅实验性 T3"
+
+msgid "fields.filter.tooltip"
+msgstr "搜索与过滤条件"
+
+msgid "fields.modified"
+msgstr "已修改"
+
+msgid "fields.not_available"
+msgstr "不可用"
+
+msgid "fields.title"
+msgstr "字段"
+
+msgid "fields.view.form"
+msgstr "表单"
+
+msgid "fields.view.table"
+msgstr "表格"
+
+msgid "file.architecture"
+msgstr "架构"
+
+msgid "file.board_build_line"
+msgstr "板号 {board} · 构建日期 {build}"
+
+msgid "file.chain.balanced"
+msgstr "平衡"
+
+msgid "file.chain.checksum"
+msgstr "8-bit 校验和"
+
+msgid "file.chain.index"
+msgstr "序号"
+
+msgid "file.chain.last"
+msgstr "最后镜像"
+
+msgid "file.chain.offset"
+msgstr "文件偏移"
+
+msgid "file.chain.size"
+msgstr "大小"
+
+msgid "file.chain.type"
+msgstr "类型"
+
+msgid "file.chain.unbalanced"
+msgstr "不平衡"
+
+msgid "file.identity"
+msgstr "文件身份"
+
+msgid "file.identity_line"
+msgstr "PCI {pci} · VBIOS {bios}"
+
+msgid "file.product"
+msgstr "产品名"
+
+msgid "file.sha256"
+msgstr "SHA-256 与文件大小"
+
+msgid "file.sha256_line"
+msgstr "SHA-256 {sha} · {size}"
+
+msgid "help.about"
+msgstr "关于 VBIOS Studio"
+
+msgid "help.experimental"
+msgstr "启用实验性字段…"
+
+msgid "help.shortcuts"
+msgstr "键盘快捷键"
+
+msgid "log.clear"
+msgstr "清空"
+
+msgid "log.copy"
+msgstr "复制"
+
+msgid "log.empty"
+msgstr "暂无日志。"
+
+msgid "log.show"
+msgstr "日志"
+
+msgid "log.title"
+msgstr "日志"
+
+msgid "log.toggle_tooltip"
+msgstr "显示或隐藏日志面板"
+
+msgid "open.error.title"
+msgstr "无法打开 ROM"
+
+msgid "profile.applied"
+msgstr "预设已套用"
+
+msgid "profile.error.title"
+msgstr "预设操作失败"
+
+msgid "profile.load"
+msgstr "载入预设…"
+
+msgid "profile.save"
+msgstr "保存预设…"
+
+msgid "profile.saved"
+msgstr "预设已保存"
+
+msgid "risk.t0"
+msgstr "T0 只读"
+
+msgid "risk.t1"
+msgstr "T1 低风险"
+
+msgid "risk.t2"
+msgstr "T2 中风险"
+
+msgid "risk.t3"
+msgstr "T3 高风险"
+
+msgid "risk.unknown"
+msgstr "未知风险"
+
+msgid "save.error.title"
+msgstr "保存失败"
+
+msgid "save.success"
+msgstr "已保存到 {path}"
+
+msgid "save.warning.body"
+msgstr "这是修改后的镜像。禁止用 nvflash 刷写；只能通过 Windows 注册表或 Linux loader override 应用。"
+
+msgid "save.warning.title"
+msgstr "保存成功 — 注意刷写限制"
+
+msgid "section.advanced"
+msgstr "实验性 / 高级"
+
+msgid "section.apply"
+msgstr "应用与刷写"
+
+msgid "section.clocks"
+msgstr "时钟"
+
+msgid "section.current"
+msgstr "电流保护"
+
+msgid "section.diff"
+msgstr "ROM 差异"
+
+msgid "section.fans"
+msgstr "风扇"
+
+msgid "section.info"
+msgstr "概览"
+
+msgid "section.log"
+msgstr "日志"
+
+msgid "section.memory"
+msgstr "内存（只读）"
+
+msgid "section.power"
+msgstr "功耗"
+
+msgid "section.voltage"
+msgstr "电压"
+
+msgid "shortcut.close"
+msgstr "关闭窗口"
+
+msgid "shortcut.log"
+msgstr "显示/隐藏日志"
+
+msgid "shortcut.open"
+msgstr "打开 ROM"
+
+msgid "shortcut.redo"
+msgstr "重做"
+
+msgid "shortcut.save"
+msgstr "另存为新 VBIOS"
+
+msgid "shortcut.search"
+msgstr "聚焦搜索"
+
+msgid "shortcut.undo"
+msgstr "撤销"
+
+msgid "sidebar.image_count"
+msgstr "{count} × 镜像"
+
+msgid "sidebar.navigation"
+msgstr "导航"
+
+msgid "sidebar.no_document"
+msgstr "未打开 ROM"
+
+msgid "sidebar.open_hint"
+msgstr "打开或拖放一个 ROM 开始"
+
+msgid "status.architecture"
+msgstr "架构"
+
+msgid "status.checksums"
+msgstr "校验和"
+
+msgid "status.checksums_bad"
+msgstr "✗ 存在校验和不平衡的镜像"
+
+msgid "status.checksums_ok"
+msgstr "✓ 全部镜像校验和平衡"
+
+msgid "status.file"
+msgstr "文件"
+
+msgid "status.no_architecture"
+msgstr "—"
+
+msgid "status.no_changes"
+msgstr "无未保存改动"
+
+msgid "status.no_document"
+msgstr "未打开文档"
+
+msgid "status.no_file"
+msgstr "未打开文件"
+
+msgid "status.unsaved"
+msgstr "{count} 个未保存改动"
+
+msgid "status.unsaved_one"
+msgstr "{count} 个未保存改动"
+
+msgid "t3.confirm.accept"
+msgstr "写入此字段"
+
+msgid "t3.confirm.body"
+msgstr "字段：{field}\\n变更：{old} → {new} {unit}\\n\\n这是 T3 高风险字段，可能导致永久硬件损坏且无法恢复。"
+
+msgid "t3.confirm.checkbox"
+msgstr "我已理解此变更的风险"
+
+msgid "t3.confirm.title"
+msgstr "确认高风险变更"
+
+msgid "t3.confirm.word"
+msgstr "输入 CONFIRM 以继续"
+
+msgid "t3.locked"
+msgstr "实验性字段尚未解锁。"
+
+msgid "t3.locked.hint"
+msgstr "请先在“帮助 → 启用实验性字段”中完成风险确认。"
+
+msgid "theme.dark"
+msgstr "深色"
+
+msgid "theme.light"
+msgstr "浅色"
+
+msgid "theme.system"
+msgstr "跟随系统"
+
+msgid "toolbar.help.tooltip"
+msgstr "帮助与快捷键"
+
+msgid "toolbar.language"
+msgstr "语言"
+
+msgid "toolbar.language.tooltip"
+msgstr "切换语言"
+
+msgid "toolbar.menu.tooltip"
+msgstr "更多操作"
+
+msgid "toolbar.open.tooltip"
+msgstr "打开 ROM（Ctrl+O）"
+
+msgid "toolbar.redo.tooltip"
+msgstr "重做（Ctrl+Y / Ctrl+Shift+Z）"
+
+msgid "toolbar.save.tooltip"
+msgstr "另存为新 VBIOS（Ctrl+Shift+S）"
+
+msgid "toolbar.search.placeholder"
+msgstr "搜索字段…"
+
+msgid "toolbar.theme"
+msgstr "主题"
+
+msgid "toolbar.theme.tooltip"
+msgstr "切换主题"
+
+msgid "toolbar.undo.tooltip"
+msgstr "撤销（Ctrl+Z）"
+
