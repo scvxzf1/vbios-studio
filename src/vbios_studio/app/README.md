@@ -4,7 +4,7 @@
 
 - `cli.py`：`vbios-studio` / `python -m vbios_studio` 命令入口；`--version`、`--selftest`、`--gui`。
 - `container.py`：构造具体 adapter 并以 `ports` Protocol 注入；测试可替换 fake。
-- 未来的撤销/重做栈、确认票据、会话状态（t4/t6）。
+- 未来的撤销/重做栈、确认票据、会话状态（GUI 与系统适配阶段）。
 
 ## 依赖方向
 

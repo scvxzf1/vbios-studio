@@ -4,7 +4,7 @@
 
 - 语言代码归一化：`zh_*` → `zh_CN`，`en_*` → `en`，默认 `en`。
 - 从 `LC_ALL` / `LC_MESSAGES` / `LANG` 推断界面语言。
-- 承载 gettext 目录（t4 起加入 `locale/<lang>/LC_MESSAGES/*.po|*.mo`）。
+- 承载 gettext 目录（`locale/<lang>/LC_MESSAGES/*.po|*.mo`）。
 
 ## 依赖方向
 
@@ -14,4 +14,4 @@
 
 ## 约束
 
-- 用户可见文案不得硬编码；所有 msgid 必须同时存在于 `en` 与 `zh_CN`（t7 检查）。
+- 用户可见文案不得硬编码；所有 msgid 必须同时存在于 `en` 与 `zh_CN`（由静态测试检查）。

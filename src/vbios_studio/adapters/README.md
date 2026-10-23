@@ -15,4 +15,4 @@
 
 ## 当前状态
 
-t2 只建立骨架与依赖边界；具体实现分别在 t3（upstream）、t6（registry/loader/nvflash）完成。
+仓库骨架阶段只建立依赖边界；具体实现分别由 upstream 桥接与 registry/loader/nvflash 适配器完成。

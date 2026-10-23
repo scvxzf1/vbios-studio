@@ -146,8 +146,8 @@ git -C ../nvidia-windows-vbios-vix-loader rev-parse HEAD
 
 | 日期 | 仓库 | 旧 SHA | 新 SHA | 操作人 | 测试结果 | 备注 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-10-22 | editor | — | `1f8ee665bd175bd9ede367e6d15308f837bd987b` | architect（t1 冻结） | ✅ 31 文件 manifest 哈希通过（`tests/contract/test_version.py`） | 初始 pin，v0.1.28；t2 vendored |
-| 2026-10-22 | windows-loader | — | `ec7bdfe317d3a52de160d17d2bb80ff20813596e` | architect（t1 冻结） | ✅ 注册表协议测试通过（`tests/apply/test_windows_registry.py`） | 初始 pin，v0.3.1-6 |
+| 2026-10-22 | editor | — | `1f8ee665bd175bd9ede367e6d15308f837bd987b` | architect（架构评审冻结） | ✅ 31 文件 manifest 哈希通过（`tests/contract/test_version.py`） | 初始 pin，v0.1.28；仓库骨架已 vendored |
+| 2026-10-22 | windows-loader | — | `ec7bdfe317d3a52de160d17d2bb80ff20813596e` | architect（架构评审冻结） | ✅ 注册表协议测试通过（`tests/apply/test_windows_registry.py`） | 初始 pin，v0.3.1-6 |
 
 ## 6. 许可证与归属
 
@@ -161,17 +161,17 @@ git -C ../nvidia-windows-vbios-vix-loader rev-parse HEAD
 
 ## 7. 当前状态
 
-| 项 | 状态 | 承接 |
+| 项 | 状态 | 承接阶段 |
 | --- | --- | --- |
-| 两个上游 URL 与 pin 记录 | ✅ 完成（本文 §1） | t1 |
-| `src/nvidia_vbios/` vendored 副本 + 31 文件 SHA-256 manifest | ✅ 完成：`src/nvidia_vbios/`、`tests/contract/upstream-manifest.json`、`tests/contract/test_version.py` | t2 |
-| Windows 注册表协议适配 | ✅ 完成：`src/vbios_studio/adapters/system/windows_registry.py` + `tests/apply/test_windows_registry.py` | t6 |
-| Linux loader 探测与指引 | ✅ 完成：`src/vbios_studio/adapters/system/linux_loader.py` + `tests/apply/test_linux_loader.py` | t6 |
-| nvflash 硬守卫 | ✅ 完成：`src/vbios_studio/adapters/system/nvflash.py` + `tests/apply/test_nvflash_guard.py` | t6 |
-| `upstream-sync.yml` | ✅ 完成：`.github/workflows/upstream-sync.yml` | t5 |
-| 同步手册 | ✅ 完成：`docs/upstream-sync.md` | t8 |
-| 上游 parity 对照测试 | ⏳ 由 t7 负责；当前字段对照覆盖见 `tests/core/test_risk_registry.py` 与 `tests/core/test_rom_structure.py` | t7 |
-| 同步日志自动化 | 可选；当前手工维护 §5 | t10 |
+| 两个上游 URL 与 pin 记录 | ✅ 完成（本文 §1） | 需求冻结 |
+| `src/nvidia_vbios/` vendored 副本 + 31 文件 SHA-256 manifest | ✅ 完成：`src/nvidia_vbios/`、`tests/contract/upstream-manifest.json`、`tests/contract/test_version.py` | 仓库骨架 |
+| Windows 注册表协议适配 | ✅ 完成：`src/vbios_studio/adapters/system/windows_registry.py` + `tests/apply/test_windows_registry.py` | 系统适配 |
+| Linux loader 探测与指引 | ✅ 完成：`src/vbios_studio/adapters/system/linux_loader.py` + `tests/apply/test_linux_loader.py` | 系统适配 |
+| nvflash 硬守卫 | ✅ 完成：`src/vbios_studio/adapters/system/nvflash.py` + `tests/apply/test_nvflash_guard.py` | 系统适配 |
+| `upstream-sync.yml` | ✅ 完成：`.github/workflows/upstream-sync.yml` | CI/CD |
+| 同步手册 | ✅ 完成：`docs/upstream-sync.md` | 文档体系 |
+| 上游 parity 对照测试 | ⏳ 由静态测试体系负责；当前字段对照覆盖见 `tests/core/test_risk_registry.py` 与 `tests/core/test_rom_structure.py` | 静态测试 |
+| 同步日志自动化 | 可选；当前手工维护 §5 | 仓库整理 |
 
 ### 7.1 校验命令（发布前必跑）
 

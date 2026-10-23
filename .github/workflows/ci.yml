@@ -42,5 +42,5 @@ jobs:
           if [ -f tools/prepush_audit.py ]; then
             python3 tools/prepush_audit.py --strict
           else
-            echo "tools/prepush_audit.py not present yet; hygiene gate is owned by t10"
+            echo "tools/prepush_audit.py not present; repository hygiene gate not configured"
           fi

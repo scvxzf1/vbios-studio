@@ -13,7 +13,7 @@
 
 VBIOS Studio 是基于 [Panchovix/nvidia-vbios-vix-editor](https://github.com/Panchovix/nvidia-vbios-vix-editor) 与 [nvidia-windows-vbios-vix-loader](https://github.com/Panchovix/nvidia-windows-vbios-vix-loader) 构建的 GTK4 图形化 NVIDIA VBIOS 编辑 / 应用套件：离线打开与检查 ROM，按 T0–T3 风险分级编辑字段（含实验性字段），生成新的 VBIOS 与 loader payload，并通过受控的 loader override 让修改生效。中英双语，Windows / Linux 双平台。
 
-> **项目状态**：v0.1.0 预发布（代码与文档已完成，等待独立评审与发布）。当前源码树中 GUI 的 diff / profile 视图与生产控制器接线（`app/container.py` 的 `build_gui_controller()`、`adapters/diff.py`、`adapters/profile.py`）已落地，并由 `tests/integration/test_real_controller.py` 覆盖真实路径；但尚未在真实 GPU 上验证。
+> **项目状态**：v0.1.0 已发布，v0.1.1 为补丁版本。当前源码树中 GUI 的 diff / profile 视图与生产控制器接线（`app/container.py` 的 `build_gui_controller()`、`adapters/diff.py`、`adapters/profile.py`）已落地，并由 `tests/integration/test_real_controller.py` 覆盖真实路径；但尚未在真实 GPU 上验证。
 >
 > 非 NVIDIA 官方项目，未获 NVIDIA 认可或赞助。NVIDIA、GeForce 是 NVIDIA Corporation 的商标。
 
