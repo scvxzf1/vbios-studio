@@ -51,10 +51,10 @@ graph TD
 | --- | --- | --- |
 | `domain` | `models.py`、`errors.py`、`risk.py`、`risk_registry.py`、`catalog.py`、`document.py`、`rom.py`、`manifest.py`、`serialization.py`、`sections.py` | 冻结 DTO；T0–T3 逐字段风险注册表与方向降级；ROM 链扫描/逐镜像 8-bit 校验和/末字节配平；字段目录映射与只读占位；manifest 构建与 JSON 序列化。纯标准库、无 I/O。 |
 | `ports` | `editor.py`、`diff.py`、`profile.py`、`apply.py` | 四个 `Protocol`；只依赖 domain；不 import 任何具体实现。 |
-| `adapters` | `upstream.py`、`diff.py`、`profile.py`、`system/windows_registry.py`、`system/windows_plan.py`、`system/windows_winreg.py`、`system/linux_loader.py`、`system/nvflash.py`、`system/_base.py` | 上游 `nvidia_vbios` 桥接（打开/编辑/保存/payload）；Windows 注册表 override；Linux loader 探测与指引；nvflash 硬守卫；统一命令 runner。 |
+| `adapters` | `upstream.py`、`diff.py`、`profile.py`、`system/windows_registry.py`、`system/windows_plan.py`、`system/windows_winreg.py`、`system/windows_verify.py`、`system/linux_loader.py`、`system/nvflash.py`、`system/_base.py` | 上游 `nvidia_vbios` 桥接（打开/编辑/保存/payload）；Windows 注册表 override；Linux loader 探测与指引；nvflash 硬守卫；统一命令 runner。 |
 | `ui` | `controller.py`、`main_window.py`、`components/`、`dialogs/`、`application.py`、`selftest.py`、`demo.py`、`theme.py`、`a11y.py` | GTK4 视图与纯展示控制器；撤销/重做、搜索过滤、表格/表单、diff、预设、应用面板、T3 门控、错误/确认/帮助对话框、xvfb 自检。 |
-| `app` | `cli.py`、`container.py` | 组合根；把 adapter 注入 port；`--version`/`--selftest`/`--gui` 入口；后续确认票据与会话状态。 |
-| `i18n` | `__init__.py`、`catalog.py`、`locale/en|zh_CN/LC_MESSAGES/*` | 运行时 gettext 切换、语言检测、279 条 msgid 的中英目录。 |
+| `app` | `cli.py`、`container.py` | 组合根：构造平台适配器（Linux guidance / Windows registry）并注入四 Port；`--version`/`--selftest`/`--gui` 入口；GUI 入口 `app/gui.py` 注入 `build_gui_controller()`。 |
+| `i18n` | `__init__.py`、`catalog.py`、`locale/en|zh_CN/LC_MESSAGES/*` | 运行时 gettext 切换、语言检测、282 条 msgid 的中英目录。 |
 
 > 每个模块的逐行职责见 [`file-tree.md`](file-tree.md)。
 
@@ -65,9 +65,11 @@ graph TD
 | `EditorPort` | `open` / `stage` / `preview` / `save_as` / `reset` | `adapters/upstream.py::UpstreamEditorAdapter` | `tests/core/rom_fixtures.py` 的合成 ROM；`ui/demo.py` 的 demo 控制器 |
 | `DiffPort` | `diff_against` | `adapters/diff.py::UpstreamDiffAdapter`：复用 `ui.diff_model.compare` 纯函数，加载右侧 ROM 并转 `RomDiff`；由 `build_gui_controller()` 注入 | `tests/ui/test_diff_model.py` |
 | `ProfilePort` | `export_changes` / `apply_profile` | `adapters/profile.py::UpstreamProfileAdapter`：导出/应用 JSON preset，整体校验后一次 `stage()`；由 `build_gui_controller()` 注入 | `tests/ui/test_profiles.py` |
-| `ApplyPort` | `device_status` / `dry_run` / `execute` / `restore` | `adapters/system/windows_registry.py`、`linux_loader.py`；刷写通道由 `nvflash.py` 守卫 | `tests/apply/fakes.py` 的 fake registry/runner |
+| `ApplyPort` | `configure_payload` / `device_status` / `describe_operations` / `dry_run` / `execute` / `restore` / `verify` | `adapters/system/windows_registry.py`（一次性 dry-run 票据 + 可选 NvAPI 读取器）、`linux_loader.py`（guidance-only，不执行 loader）；刷写通道由 `nvflash.py` 守卫 | `tests/apply/fakes.py` 的 fake registry/runner；`tests/integration/test_real_controller.py` 不手动 set_payload |
 
 > `DiffPort`/`ProfilePort` 的界面流程位于 `ui`，但所有字段校验仍回到 `EditorPort.stage()`；UI 不自行计算 bounds。`build_gui_controller()` 已返回同时实现 Editor/Diff/Profile/Apply 四 Port 的真实 `UiController`；真实路径由 `tests/integration/test_real_controller.py` 覆盖。
+>
+> `ApplyPort.describe_operations(action)` 是确认正文的唯一事实来源：返回与真实 `load`/`unload` plan 同源的 `Operation(op, name, source)` 列表，UI 不硬编码注册表键名。
 
 ## 5. 数据流
 
@@ -138,10 +140,13 @@ ui/controller.py: save_as(path)
 
 ```
 ui/components/apply_panel.py
+  ├─ ApplyPort.configure_payload()   # save_as 后注入本会话 payload 字节
   ├─ ApplyPort.device_status()       # 只读：GPU/驱动/override 状态
-  ├─ ApplyPort.dry_run()             # 零写入预览
+  ├─ ApplyPort.describe_operations() # 确认正文唯一来源：真实 plan 的 SET/DELETE
+  ├─ ApplyPort.dry_run()             # 零写入预览 + 一次性票据
   ├─ 二次确认（设备 + 键值/命令 + SHA-256）
   ├─ ApplyPort.execute()             # Windows registry 或 Linux 指引
+  ├─ ApplyPort.verify()              # 只读逐字节比较运行镜像
   └─ ApplyPort.restore()             # unload / 恢复首次 load 前的值
 
 nvflash 通道（默认禁用）:
@@ -184,7 +189,7 @@ nvflash 通道（默认禁用）:
 
 - **T0–T3 唯一来源**：`docs/risk-model.md` ↔ `domain/risk_registry.py`。未知字段一律 T0 只读；实验性字段最低 T2，涉及电压/电流/保护阈值/高级电源行为为 T3。
 - **批次风险**：`EditPreview.batch_risk = max_risk(changed)`；含任一 T3 时 `requires_t3_confirmation=True`。
-- **T3 门控**：默认隐藏；解锁仅当前会话有效；每个 T3 字段写入需输入 `CONFIRM` + 勾选风险；取消零变更。
+- **T3 门控**：默认隐藏；解锁仅当前会话有效（实验模式输入 `I UNDERSTAND`）；每个 T3 字段写入需输入字段 key 或 `T3` + 勾选风险；取消零变更。复核：`grep -n 'EXPERIMENTAL_UNLOCK_WORD\|T3_' src/vbios_studio/ui/dialogs/confirm_dialog.py`。
 - **系统写操作**：`ApplyPort` 的 `execute()`/`restore()` 前由 UI 显示目标设备、注册表键/命令、SHA-256，并要求二次确认。
 - **失败结构化**：`DomainError(code, message, hint, details)`；UI 按 code 本地化，不拼业务文案。
 

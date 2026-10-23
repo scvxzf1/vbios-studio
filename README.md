@@ -125,7 +125,7 @@ python -m vbios_studio --selftest
 3. 检查文件信息卡片与镜像链：每张镜像的 8-bit 校验和应显示 balanced。
 4. 在左侧选择分区，按 T0–T3 徽章编辑字段；T3 字段需先在“设置 → 实验性功能”完成风险确认。示例：调整一个 T2 功率字段，观察“已修改”标记。
 5. `另存为…`（`Ctrl+Shift+S`）生成新 ROM + `.json` manifest；原文件保持不动。
-6. 打开“应用”面板，选择目标 GPU，先 `dry-run` 预览将写入的注册表键/字节数，再确认执行；`Verify` 检查驱动是否实际加载；`还原` 恢复原状态。
+6. 打开“应用”面板，选择目标 GPU，先 `dry-run` 预览将写入的注册表键/字节数，再确认执行；`Verify` 仅在平台提供 NvAPI 运行镜像读取器时逐字节比较，缺失时明确返回 `VERIFY_UNAVAILABLE`（不会把存储的 override 当成运行镜像）；`还原` 恢复原状态。Linux 路径只显示外部 loader 指南，`Verify` 明确不可用。
 7. 若驱动拒绝 override，显卡会运行原厂 VBIOS；不要反复尝试，先 `unload` 并检查驱动版本。
 
 命令行示例：
@@ -146,7 +146,7 @@ python -m vbios_studio --gui path/to/card.rom
 
 ## 测试与已知限制
 
-**本机最近一次全量测试（2026-10-23，文档整理时点）**：`python -m pytest -q` → **189 passed, 1 skipped**（1 项跳过是 `.gitignore` 由仓库整理阶段交付；发布前会重跑并更新）。静态闸门：`ruff check`、`ruff format --check`、`mypy --strict src/vbios_studio`、`lint-imports`、`python -m vbios_studio --version` 均通过。测试明细与盲区见 [`docs/testing.md`](docs/testing.md)。
+**本机最近一次全量测试（2026-10-23）**：`pytest -q | tail -1` → **224 passed**；`ls tests/ui/test_*.py | wc -l` → **20**；`mypy --strict src/vbios_studio` → **77 source files**；`grep -c '^msgid' src/vbios_studio/i18n/locale/en/LC_MESSAGES/vbios_studio.po` → **282**（`zh_CN` 同）。静态闸门 `ruff check`、`ruff format --check`、`lint-imports`、`python -m vbios_studio --version` 通过；测试明细与盲区见 [`docs/testing.md`](docs/testing.md)。
 
 **未测试 / 无法测试（发布时必须保留）**：
 

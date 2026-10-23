@@ -3,7 +3,7 @@
 | 项目 | 值 |
 | --- | --- |
 | 仓库名 | `vbios-studio` |
-| 文档版本 | `1.0.2-frozen`（文档措辞清理） |
+| 文档版本 | `1.0.5-frozen`（ApplyPort 操作清单能力补充） |
 | 冻结日期 | 2026-10-22 |
 | 状态 | **FROZEN**（需求冻结；变更须走 §9 流程） |
 | 负责人 | architect |
@@ -234,7 +234,7 @@
 | ID | 要求 | 验收 |
 | --- | --- | --- |
 | NFR-01 | 分层：`domain`（纯逻辑）→ `ports`（抽象）← `adapters`（上游/注册表/loader/nvflash）；`ui` 只依赖 `ports`；`app` 组合根可依赖全部 | `lint-imports` ≥4 条契约；`ui`/`domain`/`ports` 不出现 `gi`/`winreg`/`subprocess` |
-| NFR-02 | 任何单个 `.py` 文件 ≤ 400 行；单函数 ≤ 60 行（SHOULD） | `tests/contract/test_file_size.py` |
+| NFR-02 | 任何单个 `.py` 文件 ≤ 400 行；单函数 ≤ 60 行（SHOULD） | `tests/contract/test_file_sizes.py` |
 | NFR-03 | 每个包有 `__init__.py` 与模块 docstring；`docs/file-tree.md` 与真实树一致 | `tests/contract/test_docs_tree.py` |
 | NFR-04 | 打开 1 MB 内 ROM ≤ 2 s（不含 GTK 启动）；字段搜索 ≤ 100 ms | 基准测试记录 |
 | NFR-05 | 所有错误可结构化（code/message/context/suggestion），UI 可复制 | 单元测试 |
@@ -300,6 +300,9 @@ README 必须按以下顺序与要求组织；文档负责人负责最终文案�
 | 2026-10-22 | 1.0.0-frozen | 初版冻结；并入 GUI M1 基线 10 项 | 需求冻结；用户要求 GUI 不得简陋 |
 | 2026-10-23 | 1.0.1-frozen | 附录 A 的 FieldDiff/ImageDiff 改为 GUI 丰富度冻结结构（`changed` / `kind,size,equal`），并修正测试路径引用；以 `docs/architecture.md` §5.1 为准；生产 Diff/Profile 接线由集成接线实现 | 骨架/界面实现与需求冻结契约对齐 |
 | 2026-10-23 | 1.0.2-frozen | 清理公开文档中的内部任务编号，改写为面向读者的阶段/角色描述；不改变需求、风险等级或验收契约 | 文档可读性修复 |
+| 2026-10-23 | 1.0.3-frozen | 修正 NFR-02 测试文件名单复数笔误（`test_file_size.py` → `test_file_sizes.py`），并同步 README/testing 的可复现计数；不改变任何契约条文 | 计数同步，不改变契约 |
+| 2026-10-23 | 1.0.4-frozen | 代码冻结后重新测量并同步 README/testing 计数（pytest 205、UI 18、mypy 77、msgid 282），不改变任何契约条文 | 计数同步，不改变契约 |
+| 2026-10-23 | 1.0.5-frozen | architecture 的 ApplyPort 契约表补充只读 `describe_operations(action)`：操作清单与真实写入同源，作为确认正文唯一事实来源；端口能力补充，不改变安全语义与现有需求条文 | 确认正文与实际写入同源 |
 
 ## 附录 A：UI Ports 契约（骨架阶段冻结输入）
 
