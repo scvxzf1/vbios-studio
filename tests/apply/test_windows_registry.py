@@ -143,3 +143,67 @@ def test_verify_distinguishes_no_override_match_and_mismatch() -> None:
     different = adapter.verify(b"OTHER")
     assert different.state == "override-not-active"
     assert different.details["code"] == "VERIFY_MISMATCH"
+
+
+def test_execute_without_dry_run_ticket_is_refused_with_zero_writes() -> None:
+    """A port-level execute cannot write without a dry-run ticket."""
+    platform = FakePlatform()
+    adapter = _adapter(platform)
+    adapter.configure_payload(b"PAYLOAD")
+    result = adapter.execute()
+    assert isinstance(result, ApplyResult)
+    assert result.ok is False
+    assert result.details["code"] == "CONFIRMATION_REQUIRED"
+    assert platform.writable_opens == 0
+    assert platform.key.mutations == []
+    assert platform.restarted == []
+
+
+def test_execute_consumes_one_shot_ticket_and_binds_the_target() -> None:
+    """Execute succeeds once after dry-run, then a new ticket is required."""
+    platform = FakePlatform()
+    adapter = _adapter(platform)
+    adapter.configure_payload(b"PAYLOAD")
+    preview = adapter.dry_run()
+    assert isinstance(preview, ApplyPreview)
+    first = adapter.execute()
+    assert first.ok is True
+    assert platform.writable_opens == 1
+    second = adapter.execute()
+    assert second.ok is False
+    assert second.details["code"] == "CONFIRMATION_REQUIRED"
+    assert platform.writable_opens == 1
+
+    assert adapter.dry_run().bytes_written == len(b"PAYLOAD")
+    adapter.adapter_index = 3
+    mismatch = adapter.execute()
+    assert mismatch.ok is False
+    assert mismatch.details["code"] == "CONFIRMATION_MISMATCH"
+    assert platform.writable_opens == 1
+
+
+def test_verify_reads_the_running_image_from_the_platform() -> None:
+    """The adapter's verify hook uses the platform's running-image reader."""
+    platform = FakePlatform()
+    adapter = _adapter(platform)
+    assert adapter.load(b"PAYLOAD", dry_run=False).ok is True
+    platform.running_image = b"PAYLOAD"
+    result = adapter.verify()
+    assert result.ok is True
+    assert result.state == "override-active"
+    assert result.details["code"] == "VERIFY_MATCH"
+
+
+def test_dry_run_ticket_rejects_payload_hash_mismatch_with_zero_writes() -> None:
+    """Changing the payload after the preview invalidates the ticket."""
+    platform = FakePlatform()
+    adapter = _adapter(platform)
+    adapter.configure_payload(b"PAYLOAD")
+    assert isinstance(adapter.dry_run(), ApplyPreview)
+    adapter.payload = b"TAMPERED"
+    result = adapter.execute()
+    assert result.ok is False
+    assert result.details["code"] == "CONFIRMATION_MISMATCH"
+    assert platform.writable_opens == 0
+    assert platform.key.mutations == []
+    assert platform.restarted == []

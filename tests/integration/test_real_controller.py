@@ -10,6 +10,7 @@ from rom_fixtures import synthetic_rom
 
 from vbios_studio.adapters.diff import UpstreamDiffAdapter
 from vbios_studio.adapters.profile import UpstreamProfileAdapter
+from vbios_studio.adapters.system.linux_loader import LinuxLoaderAdapter
 from vbios_studio.adapters.system.windows_registry import WindowsRegistryAdapter
 from vbios_studio.adapters.upstream import UpstreamEditorAdapter
 from vbios_studio.app.container import build_gui_controller
@@ -24,7 +25,7 @@ def test_build_gui_controller_wires_real_ports() -> None:
     assert isinstance(controller.editor, UpstreamEditorAdapter)
     assert isinstance(controller.diff_port, UpstreamDiffAdapter)
     assert isinstance(controller.profile_port, UpstreamProfileAdapter)
-    assert isinstance(controller.apply_port, WindowsRegistryAdapter)
+    assert isinstance(controller.apply_port, (WindowsRegistryAdapter, LinuxLoaderAdapter))
 
 
 def test_real_controller_open_edit_generate_and_dry_run(tmp_path: Path) -> None:
@@ -36,7 +37,7 @@ def test_real_controller_open_edit_generate_and_dry_run(tmp_path: Path) -> None:
 
     platform = FakePlatform()
     runner = FakeRunner()
-    apply = WindowsRegistryAdapter(platform=platform, runner=runner, payload=b"")
+    apply = WindowsRegistryAdapter(platform=platform, runner=runner)
     controller = build_gui_controller(apply=apply)
     document = controller.open_path(source)
     assert platform.writable_opens == 0
@@ -56,7 +57,7 @@ def test_real_controller_open_edit_generate_and_dry_run(tmp_path: Path) -> None:
     assert exported["risks"]["power_max_w"] == "T3"
 
     controller.reset_changes()
-    reapplied = controller.apply_profile(exported)
+    reapplied = controller.apply_profile(exported, confirmed_t3={"power_max_w"})
     assert reapplied.errors == ()
     assert controller.changes == {"power_max_w": "100"}
 
@@ -72,11 +73,13 @@ def test_real_controller_open_edit_generate_and_dry_run(tmp_path: Path) -> None:
     assert diff.field_diffs
     assert diff.summary["fields_changed"] == len(diff.field_diffs)
 
-    apply.set_payload(target.read_bytes())
+    assert saved.payload_paths
+    payload_bytes = saved.payload_paths[0].read_bytes()
+    assert apply.payload == payload_bytes
     dry_run = controller.apply_dry_run()
     assert dry_run.action == "load"
     assert dry_run.target.startswith("HKLM\\")
-    assert dry_run.bytes_written == len(target.read_bytes())
+    assert dry_run.bytes_written == len(payload_bytes)
     assert platform.writable_opens == 0
     assert platform.key.mutations == []
     assert platform.restarted == []

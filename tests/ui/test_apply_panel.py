@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from vbios_studio.i18n import gettext as _
+from vbios_studio.ports.apply import Operation
 from vbios_studio.ui.components.apply_panel import ApplyPanel
 from vbios_studio.ui.controller import UiController
 from vbios_studio.ui.demo import demo_controller
@@ -17,6 +18,14 @@ class TrackingApply:
         self.execute_calls = 0
         self.restore_calls = 0
         self.writes = 0
+
+    def describe_operations(self, action: str):
+        if action == "restore":
+            return (Operation("delete", "vbios", "payload"),)
+        return (
+            Operation("set", "vbios", "payload"),
+            Operation("set", "EnableGpuFirmware", "constant"),
+        )
 
     def device_status(self):
         from vbios_studio.domain.models import DeviceStatus
@@ -44,6 +53,16 @@ class TrackingApply:
         self.restore_calls += 1
         self.writes += 1
         return ApplyResult(True, "no-override", "Restored.", {})
+
+    def verify(self, running_image=None):
+        from vbios_studio.domain.models import ApplyResult
+
+        return ApplyResult(
+            True,
+            "override-active",
+            "Running VBIOS matches the stored override.",
+            {"code": "VERIFY_MATCH", "running_sha256": "0" * 64},
+        )
 
 
 def test_dry_run_is_the_only_zero_write_preview(controller: UiController) -> None:
@@ -79,6 +98,9 @@ def test_confirm_calls_execute_once(gtk_initialised) -> None:
         _, controller, on_error=lambda _title, _exc: None, confirm=lambda _t, _b, run: run()
     )
     panel.refresh()
+    assert panel.apply_button.get_sensitive() is False
+    panel.dry_run()
+    assert panel.apply_button.get_sensitive() is True
     panel.request_execute()
     assert apply.execute_calls == 1
 
@@ -130,7 +152,20 @@ def test_rejected_apply_has_no_partial_write(gtk_initialised) -> None:
         confirm=lambda _title, _body, run: run(),
     )
     panel.refresh()
+    panel.dry_run()
     panel.request_execute()
     assert apply.execute_calls == 1
     assert apply.writes == 0
     assert errors and errors[0][1].code == "APPLY_DENIED"
+
+
+def test_verify_uses_the_apply_port(gtk_initialised) -> None:
+    """The Verify button calls ApplyPort.verify instead of guessing from status."""
+    controller = demo_controller()
+    controller.open_path(Path("/tmp/apply.rom"))
+    apply = TrackingApply()
+    controller.apply_port = apply
+    panel = ApplyPanel(_, controller, on_error=lambda _title, _exc: None)
+    panel.refresh()
+    panel.verify()
+    assert "override-active" in panel.status_label.get_text()

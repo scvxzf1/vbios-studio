@@ -67,6 +67,7 @@ class FakePlatform:
         self.restart_output = restart_output
         self.restarted: list[str] = []
         self.writable_opens = 0
+        self.running_image: bytes | None = None
         self._adapter = WindowsAdapterInfo(
             index=0,
             name=name,
@@ -93,6 +94,11 @@ class FakePlatform:
         """Record a device restart."""
         self.restarted.append(instance_id)
         return self.restart_code, self.restart_output
+
+    def vbios_image(self, adapter: WindowsAdapterInfo) -> bytes | None:
+        """Return the configured fake running image, if any."""
+        del adapter
+        return self.running_image
 
 
 class FakeRunner:
