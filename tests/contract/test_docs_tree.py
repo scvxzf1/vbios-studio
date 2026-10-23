@@ -30,26 +30,57 @@ def test_required_docs_exist() -> None:
 
 
 def test_readme_has_prominent_incomplete_warning() -> None:
-    """The warning must be in the first screen, before ordinary marketing copy."""
-    text = _read(ROOT / "README.md")
-    head = text[:2500]
-    assert "测试不完全" in head
-    assert "未在真实硬件验证" in head
-    assert "nvflash" in head
+    """Both READMEs must carry the warning in the first screen."""
+    variants = (
+        (ROOT / "README.md", ("测试不完全", "未在真实硬件验证", "nvflash")),
+        (
+            ROOT / "README.en.md",
+            ("Testing incomplete", "Not validated on real hardware", "nvflash"),
+        ),
+    )
+    for path, phrases in variants:
+        head = _read(path)[:3000]
+        for phrase in phrases:
+            assert phrase in head, f"{path.name} lacks prominent warning phrase: {phrase}"
 
 
 def test_readme_has_required_sections() -> None:
-    """Support matrix, install, quick start, risk and disclaimer are mandatory."""
-    text = _read(ROOT / "README.md")
-    for heading in ("支持矩阵", "安装", "快速开始", "风险分级", "许可证与免责声明"):
-        assert heading in text, f"README lacks section: {heading}"
+    """Both READMEs must contain the complete published section set."""
+    variants = (
+        (ROOT / "README.md", ("支持矩阵", "安装", "快速开始", "风险分级", "许可证与免责声明")),
+        (
+            ROOT / "README.en.md",
+            (
+                "Support matrix",
+                "Installation",
+                "Quick start",
+                "Risk levels",
+                "License and disclaimer",
+            ),
+        ),
+    )
+    for path, headings in variants:
+        text = _read(path)
+        for heading in headings:
+            assert heading in text, f"{path.name} lacks section: {heading}"
 
 
 def test_readme_links_every_document() -> None:
-    """Every docs page is linked from the README documentation table."""
-    text = _read(ROOT / "README.md")
-    for name in DOCS:
-        assert f"docs/{name}" in text, f"README does not link docs/{name}"
+    """Both READMEs link every doc, all local targets exist, and language switches work."""
+    for path in (ROOT / "README.md", ROOT / "README.en.md"):
+        text = _read(path)
+        for name in DOCS:
+            assert f"docs/{name}" in text, f"{path.name} does not link docs/{name}"
+        assert "docs/reviews/README.md" in text, f"{path.name} does not link the review index"
+        for target in re.findall(r"\]\(([^)]+)\)", text):
+            link = target.strip().split()[0]
+            if link.startswith(("http://", "https://", "mailto:", "#")):
+                continue
+            link = link.split("#", 1)[0].split("?", 1)[0]
+            assert (path.parent / link).is_file(), f"{path.name} has missing local link: {target}"
+
+    assert "**简体中文** | [English](README.en.md)" in _read(ROOT / "README.md")
+    assert "[简体中文](README.md) | **English**" in _read(ROOT / "README.en.md")
 
 
 def test_file_tree_lists_every_source_module() -> None:

@@ -1,5 +1,7 @@
 # VBIOS Studio
 
+**简体中文** | [English](README.en.md)
+
 > [!WARNING]
 > ## ⚠️ 测试不完全 / 未在真实硬件验证
 >
