@@ -70,6 +70,7 @@ jobs:
             mingw-w64-ucrt-x86_64-python
             mingw-w64-ucrt-x86_64-python-pip
             mingw-w64-ucrt-x86_64-python-gobject
+            mingw-w64-ucrt-x86_64-python-zstandard
             mingw-w64-ucrt-x86_64-gtk4
             mingw-w64-ucrt-x86_64-gcc
             mingw-w64-ucrt-x86_64-binutils
@@ -78,7 +79,7 @@ jobs:
       - name: Install Nuitka and Zig
         run: |
           python -m pip install --index-url https://pypi.org/simple --break-system-packages \
-            nuitka==4.2.2 ordered-set==4.1.0 zstandard==0.25.0
+            nuitka==4.2.2 ordered-set==4.1.0
           python -m pip download --index-url https://pypi.org/simple --no-deps \
             --only-binary=:all: --platform win_amd64 --python-version 3.12 \
             -d zigwheel ziglang==0.16.0
