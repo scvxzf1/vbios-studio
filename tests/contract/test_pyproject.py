@@ -5,6 +5,8 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
+from vbios_studio import __version__
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -13,10 +15,10 @@ def _pyproject() -> dict[str, object]:
 
 
 def test_pyproject_project_metadata() -> None:
-    """Project name, version and Python floor are frozen for v0.1.0."""
+    """Project name, version and Python floor are consistent with the package."""
     project = _pyproject()["project"]
     assert project["name"] == "vbios-studio"
-    assert project["version"] == "0.1.0"
+    assert project["version"] == __version__
     assert project["requires-python"] == ">=3.11"
 
 

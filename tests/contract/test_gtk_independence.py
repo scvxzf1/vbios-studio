@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from vbios_studio import __version__
+
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
 
@@ -34,7 +36,7 @@ def test_version_does_not_import_gtk(tmp_path: Path) -> None:
     result = _run_with_broken_gtk(tmp_path, ["--version"])
     assert result.returncode == 0, result.stderr
     assert "vbios-studio" in result.stdout
-    assert "0.1.0" in result.stdout
+    assert __version__ in result.stdout
 
 
 def test_selftest_does_not_import_gtk(tmp_path: Path) -> None:
