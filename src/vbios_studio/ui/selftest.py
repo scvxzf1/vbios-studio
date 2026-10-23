@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import os
-import shutil
 import sys
 import tempfile
 import traceback
@@ -14,10 +13,6 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from vbios_studio import __version__
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[3]
 
 
 def _png_size(path: Path) -> tuple[int, int]:
@@ -107,8 +102,9 @@ def run_selftest(screenshots: Path | None = None) -> int:
 
     Concurrency matters here: two test processes must not fight over the same
     GApplication id (which silently exits the second instance) or over the same
-    PNG files.  Explicit ``screenshots`` directories are written in place;
-    the default docs-assets directory receives atomically replaced files.
+    PNG files.  Explicit ``screenshots`` directories are written in place; the
+    default is a temporary directory so running self-test never dirties the
+    repository.
     """
     try:
         import gi
@@ -126,14 +122,13 @@ def run_selftest(screenshots: Path | None = None) -> int:
     from vbios_studio.ui.main_window import MainWindow
     from vbios_studio.ui.theme import RISK_COLORS, install_css
 
-    default_target = screenshots is None
-    target = screenshots or _repo_root() / "docs-assets" / "screenshots"
-    if default_target:
-        target.parent.mkdir(parents=True, exist_ok=True)
-        workdir = Path(tempfile.mkdtemp(prefix=".vbios-selftest-", dir=target.parent))
+    if screenshots is None:
+        target = Path(tempfile.mkdtemp(prefix="vbios-selftest-")) / "screenshots"
     else:
-        workdir = target
-        workdir.mkdir(parents=True, exist_ok=True)
+        target = screenshots
+    workdir = target
+    workdir.mkdir(parents=True, exist_ok=True)
+    print(f"selftest screenshots: {workdir}", flush=True)
 
     set_language("en")
     controller = demo_controller()
@@ -154,13 +149,8 @@ def run_selftest(screenshots: Path | None = None) -> int:
     def finish() -> None:
         if watchdog:
             GLib.source_remove(watchdog.pop())
-        if default_target and result["code"] == 0:
-            target.mkdir(parents=True, exist_ok=True)
-            for name in ("01-main-window.png", "02-fields-risk.png", "03-apply-panel.png"):
-                os.replace(workdir / name, target / name)
-            shutil.rmtree(workdir, ignore_errors=True)
-        elif workdir != target:
-            shutil.rmtree(workdir, ignore_errors=True)
+        # Screenshots stay in the selected directory (temporary by default).
+        # Keep them for the user to inspect; no repository writes are needed.
 
     def activate(_app) -> None:
         activated["value"] = True
