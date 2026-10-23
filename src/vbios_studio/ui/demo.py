@@ -27,6 +27,7 @@ from vbios_studio.domain.models import (
     SaveResult,
 )
 from vbios_studio.domain.risk import max_risk
+from vbios_studio.ports.apply import Operation
 from vbios_studio.ui.controller import UiController
 from vbios_studio.ui.demo_data import demo_snapshot
 
@@ -149,6 +150,26 @@ class DemoApply:
         self.dry_run_calls = 0
         self.execute_calls = 0
         self.restore_calls = 0
+        self.payload: bytes | None = None
+
+    def configure_payload(self, payload: bytes, *, source: Path | None = None) -> None:
+        del source
+        self.payload = bytes(payload)
+
+    def describe_operations(self, action: str) -> tuple[Operation, ...]:
+        if action == "load":
+            return (
+                Operation("set", "vbios", "payload"),
+                Operation("set", "EnableGpuFirmware", "constant"),
+            )
+        if action == "restore":
+            return (
+                Operation("delete", "vbios", "payload"),
+                Operation("delete", "EnableGpuFirmware", "backup"),
+            )
+        raise DomainError(
+            "INVALID_ACTION", f"Unsupported apply action: {action}", "Use load or restore."
+        )
 
     def device_status(self) -> DeviceStatus:
         return DeviceStatus(
@@ -173,6 +194,10 @@ class DemoApply:
     def restore(self) -> ApplyResult:
         self.restore_calls += 1
         return ApplyResult(True, "no-override", "Previous state restored.", {})
+
+    def verify(self, running_image: bytes | None = None) -> ApplyResult:
+        del running_image
+        return ApplyResult(True, "no-override", "Demo verification only.", {"code": "VERIFY_MATCH"})
 
 
 def demo_controller() -> UiController:

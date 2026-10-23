@@ -11,7 +11,8 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
-from vbios_studio.domain.models import ApplyPreview, ApplyResult
+from vbios_studio.domain.models import ApplyPreview, ApplyResult, EditPreview, FieldChange
+from vbios_studio.ports.apply import Operation
 from vbios_studio.ui.a11y import set_accessible
 from vbios_studio.ui.controller import UiController
 from vbios_studio.ui.dialogs.confirm_dialog import ConfirmationRules, ConfirmDialog
@@ -19,6 +20,28 @@ from vbios_studio.ui.theme import add_class
 
 Translate = Callable[[str], str]
 ConfirmCallback = Callable[[str, str, Callable[[], None]], None]
+
+
+def t3_changes(preview: EditPreview | None) -> tuple[FieldChange, ...]:
+    """Return the T3 subset of a staged edit preview, in original order."""
+    if preview is None:
+        return ()
+    return tuple(change for change in preview.changed if change.risk == "T3")
+
+
+def t3_change_lines(preview: EditPreview | None) -> tuple[str, ...]:
+    """One line per T3 change: key, old → new, risk label."""
+    lines: list[str] = []
+    for change in t3_changes(preview):
+        old = change.old if change.old is not None else "—"
+        suffix = f" {change.unit}" if change.unit else ""
+        lines.append(f"{change.key}: {old} → {change.new}{suffix} [{change.risk}]")
+    return tuple(lines)
+
+
+def operation_lines(operations: tuple[Operation, ...]) -> tuple[str, ...]:
+    """Render the port's exact plan as safe confirmation text."""
+    return tuple(f"{op.op.upper()} {op.name} (source: {op.source})" for op in operations)
 
 
 class ApplyPanel(Gtk.Box):
@@ -35,6 +58,7 @@ class ApplyPanel(Gtk.Box):
         self.on_error = on_error
         self.confirm = confirm
         self.last_preview: ApplyPreview | None = None
+        self.last_operations: tuple[Operation, ...] = ()
         self.apply_calls = 0
         self.restore_calls = 0
 
@@ -51,6 +75,16 @@ class ApplyPanel(Gtk.Box):
         header.append(self.refresh_button)
         self.append(header)
 
+        self.t3_banner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        self.t3_banner.add_css_class("vb-warning")
+        self.t3_banner.add_css_class("vb-t3-banner")
+        self.t3_banner.set_visible(False)
+        self.t3_banner_label = Gtk.Label(label="", xalign=0, wrap=True, selectable=True)
+        self.t3_banner_label.add_css_class("vb-bad")
+        set_accessible(self.t3_banner_label, _("risk.t3"))
+        self.t3_banner.append(self.t3_banner_label)
+        self.append(self.t3_banner)
+
         warning = Gtk.Label(label=_("apply.warning"), xalign=0, wrap=True)
         warning.add_css_class("vb-warning")
         self.append(warning)
@@ -64,6 +98,7 @@ class ApplyPanel(Gtk.Box):
         self.dry_button = Gtk.Button(label=_("apply.dry_run"))
         self.apply_button = Gtk.Button(label=_("apply.execute"))
         self.apply_button.add_css_class("destructive-action")
+        self.apply_button.set_sensitive(False)
         self.verify_button = Gtk.Button(label=_("apply.verify"))
         self.restore_button = Gtk.Button(label=_("apply.restore"))
         for button, msgid in (
@@ -92,6 +127,10 @@ class ApplyPanel(Gtk.Box):
         self.append(self.status_label)
 
     def refresh(self) -> None:
+        self.last_preview = None
+        self.last_operations = ()
+        self.apply_button.set_sensitive(False)
+        self.refresh_t3_banner()
         self._clear(self.device_card)
         try:
             status = self.controller.device_status()
@@ -148,10 +187,39 @@ class ApplyPanel(Gtk.Box):
         except Exception as exc:
             self.on_error(self._("apply.title"), exc)
             return None
+        if preview.bytes_written <= 0:
+            self.last_preview = None
+            self.last_operations = ()
+            self.apply_button.set_sensitive(False)
+            self._render_preview(preview)
+            return preview
+        try:
+            self.last_operations = self.controller.describe_apply_operations("load")
+        except Exception as exc:
+            self.last_preview = None
+            self.last_operations = ()
+            self.apply_button.set_sensitive(False)
+            self.on_error(self._("apply.title"), exc)
+            return None
         self.last_preview = preview
+        self.apply_button.set_sensitive(True)
         self._render_preview(preview)
+        self.refresh_t3_banner()
         self.status_label.set_text(self._("apply.dry_run_done"))
         return preview
+
+    def refresh_t3_banner(self) -> None:
+        """Render every staged T3 field in the red batch banner."""
+        lines = t3_change_lines(self.controller.preview)
+        self.t3_banner.set_visible(bool(lines))
+        if lines:
+            text = [self._("risk.t3"), *lines]
+            registry = operation_lines(self.last_operations)
+            if registry:
+                text.extend(("", self._("apply.preview.target"), *registry))
+            self.t3_banner_label.set_text("\n".join(text))
+        else:
+            self.t3_banner_label.set_text("")
 
     def _render_preview(self, preview: ApplyPreview) -> None:
         self._clear(self.preview_box)
@@ -199,6 +267,10 @@ class ApplyPanel(Gtk.Box):
             self.preview_box.append(label)
 
     def request_execute(self) -> None:
+        if self.last_preview is None:
+            self.status_label.set_text(self._("apply.not_run"))
+            return
+
         def run() -> None:
             self.apply_calls += 1
             try:
@@ -206,9 +278,24 @@ class ApplyPanel(Gtk.Box):
             except Exception as exc:
                 self.on_error(self._("apply.title"), exc)
                 return
+            finally:
+                self.last_preview = None
+                self.apply_button.set_sensitive(False)
             self._show_result(result)
 
-        self._confirm(self._("apply.confirm.title"), self._("apply.confirm.body"), run)
+        try:
+            operations = self.controller.describe_apply_operations("load")
+        except Exception as exc:
+            self.on_error(self._("apply.title"), exc)
+            return
+        body = self._("apply.confirm.body")
+        t3_lines = t3_change_lines(self.controller.preview)
+        if t3_lines:
+            body += "\n\n" + self._("risk.t3") + "\n" + "\n".join(t3_lines)
+        operation_text = operation_lines(operations)
+        if operation_text:
+            body += "\n\n" + self._("apply.preview.target") + "\n" + "\n".join(operation_text)
+        self._confirm(self._("apply.confirm.title"), body, run)
 
     def request_restore(self) -> None:
         def run() -> None:
@@ -220,9 +307,16 @@ class ApplyPanel(Gtk.Box):
                 return
             self._show_result(result)
 
-        self._confirm(
-            self._("apply.restore_confirm.title"), self._("apply.restore_confirm.body"), run
-        )
+        try:
+            operations = self.controller.describe_apply_operations("restore")
+        except Exception as exc:
+            self.on_error(self._("apply.title"), exc)
+            return
+        body = self._("apply.restore_confirm.body")
+        restore_text = operation_lines(operations)
+        if restore_text:
+            body += "\n\n" + self._("apply.preview.target") + "\n" + "\n".join(restore_text)
+        self._confirm(self._("apply.restore_confirm.title"), body, run)
 
     def _confirm(self, title: str, body: str, run: Callable[[], None]) -> None:
         if self.confirm is not None:
@@ -251,15 +345,11 @@ class ApplyPanel(Gtk.Box):
 
     def verify(self) -> None:
         try:
-            status = self.controller.device_status()
+            result = self.controller.apply_verify()
         except Exception as exc:
             self.on_error(self._("apply.verify"), exc)
             return
-        self.status_label.set_text(
-            self._("apply.verify_state").format(
-                state=self._("apply.override." + status.override_state.replace("-", "_"))
-            )
-        )
+        self.status_label.set_text(f"{result.state}: {result.message}")
 
     def retranslate(self, _: Translate) -> None:
         self._ = _

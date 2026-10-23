@@ -13,12 +13,15 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import secrets
+from pathlib import Path
 
-from vbios_studio.domain.errors import ELEVATION_REQUIRED, IO_ERROR
-from vbios_studio.domain.models import ApplyPreview, ApplyResult, DeviceStatus, OverrideState
+from vbios_studio.domain.errors import ELEVATION_REQUIRED, IO_ERROR, DomainError
+from vbios_studio.domain.models import ApplyPreview, ApplyResult, DeviceStatus
+from vbios_studio.ports.apply import Operation
 
 from ._base import CommandRunner, SubprocessRunner
-from .windows_plan import (
+from .windows_plan import (  # noqa: F401
     ABSENT,
     ENABLE_GPU_FIRMWARE_VALUE,
     FIRMWARE_OVERRIDE,
@@ -32,6 +35,7 @@ from .windows_plan import (
     RegistryPlan,
     WindowsAdapterInfo,
     WindowsPlatform,
+    describe_operations,
     error,
     plan_load,
     plan_unload,
@@ -39,21 +43,8 @@ from .windows_plan import (
     readback_load,
     readback_unload,
 )
+from .windows_verify import read_device_status, verify_override
 
-__all__ = [
-    "ABSENT",
-    "ENABLE_GPU_FIRMWARE_VALUE",
-    "FIRMWARE_OVERRIDE",
-    "OVERRIDE_VALUE_NAME",
-    "PREVIOUS_VALUE_NAME",
-    "REGISTRY_CLASS_KEY",
-    "REG_BINARY",
-    "REG_DWORD",
-    "REG_SZ",
-    "WindowsAdapterInfo",
-    "WindowsPlatform",
-    "WindowsRegistryAdapter",
-]
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -81,6 +72,8 @@ class WindowsRegistryAdapter:
         self.adapter_index = adapter_index
         self.payload = bytes(payload) if payload is not None else None
         self.restart = restart
+        # Private one-shot ticket: (token, payload sha256, target, device).
+        self._ticket: tuple[str, str, str, str] | None = None
 
     # ------------------------------------------------------------- port API
     def device_status(self) -> DeviceStatus:
@@ -88,37 +81,19 @@ class WindowsRegistryAdapter:
         adapter = self._select()
         if adapter is None:
             return DeviceStatus(0, "No NVIDIA GPU", "", None, "unknown", False)
-        state: OverrideState = "unknown"
-        if self.platform is not None:
-            try:
-                key = self.platform.open_key(adapter)
-                try:
-                    state = (
-                        "override-active"
-                        if key.get(OVERRIDE_VALUE_NAME) is not None
-                        else "no-override"
-                    )
-                finally:
-                    key.close()
-            except OSError:
-                state = "unknown"
-        return DeviceStatus(
-            adapter.index,
-            adapter.name,
-            adapter.pci_id,
-            adapter.driver_version,
-            state,
-            adapter.supports_payload,
-        )
+        if self.platform is None:
+            return DeviceStatus(
+                adapter.index,
+                adapter.name,
+                adapter.pci_id,
+                adapter.driver_version,
+                "unknown",
+                False,
+            )
+        return read_device_status(self.platform, adapter)
 
     def verify(self, running_image: bytes | None = None) -> ApplyResult:
-        """Compare the stored override with the driver's actual running image.
-
-        ``running_image`` must be read from the driver by the caller; this
-        adapter never invents a running image. The returned state follows the
-        upstream protocol: ``no-override``, ``override-active`` (byte-identical)
-        or ``override-not-active`` (different).
-        """
+        """Compare the stored override with the running image (read-only)."""
         adapter = self._select()
         if adapter is None:
             return error(
@@ -132,44 +107,43 @@ class WindowsRegistryAdapter:
                 "The Windows registry backend is unavailable.",
                 "Run on Windows.",
             )
-        key: RegistryKey | None = None
-        try:
-            key = self.platform.open_key(adapter)
-            stored = key.get(OVERRIDE_VALUE_NAME)
-        except OSError as exc:
-            return error(IO_ERROR, f"Cannot read the GPU driver key: {exc}", "Check permissions.")
-        finally:
-            if key is not None:
-                key.close()
-        if stored is None:
-            return ApplyResult(
-                True, "no-override", "No override is stored.", {"code": "NO_OVERRIDE"}
-            )
-        if running_image is None:
-            return ApplyResult(
-                False,
-                "unknown",
-                "No running VBIOS image was supplied for verification.",
-                {"code": "VERIFY_UNAVAILABLE", "hint": "Read the active driver image and retry."},
-            )
-        active = bytes(stored[1]) if stored[0] == REG_BINARY else b""
-        match = active == running_image
-        return ApplyResult(
-            True,
-            "override-active" if match else "override-not-active",
-            "Running VBIOS matches the stored override."
-            if match
-            else "Running VBIOS differs from the stored override.",
-            {
-                "code": "VERIFY_MATCH" if match else "VERIFY_MISMATCH",
-                "override_sha256": hashlib.sha256(active).hexdigest(),
-                "running_sha256": hashlib.sha256(running_image).hexdigest(),
-            },
+        reader = getattr(self.platform, "vbios_image", None)
+        return verify_override(
+            self.platform, adapter, running_image, reader if callable(reader) else None
         )
 
-    def set_payload(self, payload: bytes) -> None:
-        """Set the payload used by the port-style ``dry_run``/``execute`` calls."""
+    def describe_operations(self, action: str) -> tuple[Operation, ...]:
+        """Return the exact registry operations for ``load`` or ``restore``."""
+        adapter = self._select()
+        if adapter is None:
+            raise DomainError(
+                "DEVICE_NOT_FOUND",
+                "No NVIDIA GPU driver key was found.",
+                "Check the GPU and driver.",
+            )
+        if self.platform is None:
+            raise DomainError(
+                "PLATFORM_UNAVAILABLE",
+                "The Windows registry backend is unavailable.",
+                "Run on Windows.",
+            )
+        return describe_operations(
+            self.platform,
+            adapter,
+            self.payload,
+            action=action,
+            restart=self.restart,
+        )
+
+    def configure_payload(self, payload: bytes, *, source: Path | None = None) -> None:
+        """Attach the exact payload saved by the editor and invalidate old tickets."""
+        del source
         self.payload = bytes(payload)
+        self._ticket = None
+
+    def set_payload(self, payload: bytes) -> None:
+        """Backward-compatible alias for :meth:`configure_payload`."""
+        self.configure_payload(payload)
 
     def dry_run(self) -> ApplyPreview:
         """Return the exact load plan without touching the registry."""
@@ -178,17 +152,51 @@ class WindowsRegistryAdapter:
                 "load", "", {"error": "no payload configured"}, 0, False, ("Set a payload first.",)
             )
         result = self.load(self.payload, dry_run=True)
-        return (
-            result
-            if isinstance(result, ApplyPreview)
-            else ApplyPreview("load", "", {"error": result.message}, 0, False, (result.message,))
+        if not isinstance(result, ApplyPreview) or result.bytes_written == 0:
+            self._ticket = None
+            return (
+                result
+                if isinstance(result, ApplyPreview)
+                else ApplyPreview(
+                    "load", "", {"error": result.message}, 0, False, (result.message,)
+                )
+            )
+        adapter = self._select()
+        target = f"HKLM\\{adapter.driver_key}" if adapter is not None else ""
+        device = adapter.name if adapter is not None else ""
+        self._ticket = (
+            secrets.token_hex(16),
+            hashlib.sha256(self.payload).hexdigest(),
+            target,
+            device,
         )
+        return result
 
     def execute(self) -> ApplyResult:
-        """Execute the configured load action."""
+        """Execute only the exact load plan approved by a prior dry-run."""
         if self.payload is None:
             return error(
                 "NO_PAYLOAD", "No payload is configured.", "Export a loader payload first."
+            )
+        ticket, self._ticket = self._ticket, None
+        if ticket is None:
+            return error(
+                "CONFIRMATION_REQUIRED",
+                "A dry-run confirmation ticket is required before writing.",
+                "Run the preview first, then confirm the write.",
+            )
+        adapter = self._select()
+        target = f"HKLM\\{adapter.driver_key}" if adapter is not None else ""
+        device = adapter.name if adapter is not None else ""
+        if (
+            ticket[1] != hashlib.sha256(self.payload).hexdigest()
+            or ticket[2] != target
+            or ticket[3] != device
+        ):
+            return error(
+                "CONFIRMATION_MISMATCH",
+                "The payload or target device changed after the dry-run.",
+                "Run a new dry-run before writing.",
             )
         result = self.load(self.payload, dry_run=False)
         return (
@@ -197,6 +205,7 @@ class WindowsRegistryAdapter:
 
     def restore(self) -> ApplyResult:
         """Remove the override and restore the pre-load firmware value."""
+        self._ticket = None
         result = self.unload(dry_run=False)
         return (
             result if isinstance(result, ApplyResult) else error("UNEXPECTED", "Unexpected result.")

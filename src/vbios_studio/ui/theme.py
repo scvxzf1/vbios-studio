@@ -88,6 +88,10 @@ window, .vb-window { background-color: @theme_bg_color; }
   padding: 10px 12px; border-radius: 10px;
   background-color: alpha(#DC2626, 0.09); border: 1px solid alpha(#DC2626, 0.25);
 }
+.vb-t3-banner {
+  padding: 10px 12px; border-radius: 10px;
+  background-color: alpha(#DC2626, 0.14); border: 1px solid alpha(#DC2626, 0.38);
+}
 .vb-note {
   padding: 10px 12px; border-radius: 10px;
   background-color: alpha(#D97706, 0.08); border: 1px solid alpha(#D97706, 0.22);

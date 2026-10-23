@@ -11,7 +11,11 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 
 from vbios_studio.ui.controller import UiController
-from vbios_studio.ui.dialogs.confirm_dialog import ConfirmationRules, ConfirmDialog
+from vbios_studio.ui.dialogs.confirm_dialog import (
+    EXPERIMENTAL_UNLOCK_WORD,
+    ConfirmationRules,
+    ConfirmDialog,
+)
 
 Translate = Callable[[str], str]
 
@@ -31,7 +35,7 @@ def request_experimental_unlock(
         parent,
         _("experimental.title"),
         _("experimental.body"),
-        rules=ConfirmationRules(require_checkbox=True, required_word="ENABLE"),
+        rules=ConfirmationRules(require_checkbox=True, required_word=EXPERIMENTAL_UNLOCK_WORD),
         confirm_label=_("experimental.enable"),
         cancel_label=_("common.cancel"),
         checkbox_label=_("experimental.checkbox"),

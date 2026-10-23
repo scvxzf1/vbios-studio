@@ -123,15 +123,10 @@ class WindowDialogs:
             return
         try:
             data = profile_io.read_profile(Path(file.get_path()))
-            preview = self.window.controller.apply_profile(data)
-            if preview.errors:
-                self.window._show_field_errors(preview)
-                return
         except (DomainError, OSError, ValueError) as exc:
             self.window._show_error(_("profile.error.title"), exc)
             return
-        self.window._toast(_("profile.applied"))
-        self.window._refresh_all()
+        self.window.profile_flow.apply_document(data)
 
     def choose_diff_dialog(self) -> None:
         if self.window.controller.snapshot is None:

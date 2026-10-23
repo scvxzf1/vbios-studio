@@ -10,12 +10,8 @@ from typing import Any
 
 from vbios_studio.domain.errors import DomainError
 from vbios_studio.domain.models import (
-    ApplyPreview,
-    ApplyResult,
-    DeviceStatus,
     DocumentSnapshot,
     EditPreview,
-    FieldChange,
     FieldSnapshot,
     RomDiff,
     SaveResult,
@@ -24,23 +20,13 @@ from vbios_studio.ports.apply import ApplyPort
 from vbios_studio.ports.diff import DiffPort
 from vbios_studio.ports.editor import EditorPort
 from vbios_studio.ports.profile import ProfilePort
+from vbios_studio.ui.apply_actions import ApplyActions
+from vbios_studio.ui.controller_errors import ConfirmationRequired as ConfirmationRequired
+from vbios_studio.ui.controller_errors import T3LockedError as T3LockedError
 from vbios_studio.ui.filtering import FilterState, filter_fields, section_counts
+from vbios_studio.ui.profile_controller import ProfileControllerMixin
 
 Listener = Callable[[str], None]
-
-
-class ConfirmationRequired(Exception):  # noqa: N818
-    """Raised when a T3 field needs an explicit second confirmation."""
-
-    def __init__(self, field: FieldSnapshot, old: str | None, new: str) -> None:
-        super().__init__(f"confirmation required for {field.key}")
-        self.field = field
-        self.old = old
-        self.new = new
-
-
-class T3LockedError(Exception):
-    """Raised when a caller tries to edit a T3 field before unlocking experimental mode."""
 
 
 @dataclass
@@ -50,7 +36,7 @@ class LogEntry:
     timestamp: datetime = field(default_factory=datetime.now)
 
 
-class UiController:
+class UiController(ApplyActions, ProfileControllerMixin):
     """Owns every piece of mutable UI state; talks to ports only."""
 
     UNDO_LIMIT = 100
@@ -298,42 +284,6 @@ class UiController:
         self.changes = dict(target)
         return True
 
-    # -- saving ------------------------------------------------------------
-    def save_as(self, path: Path) -> SaveResult:
-        if self.snapshot is None:
-            raise DomainError("NO_DOCUMENT", "Open a ROM first.", "Use File → Open.")
-        result = self.editor.save_as(Path(path))
-        self.last_saved = result
-        self.log(f"Saved new VBIOS to {result.path} (sha256 {result.sha256[:12]}…)")
-        self._notify("saved")
-        return result
-
-    # -- profiles ----------------------------------------------------------
-    def export_profile(self) -> dict[str, Any]:
-        if self.profile_port is None:
-            raise DomainError(
-                "PROFILE_UNAVAILABLE", "Presets are not available.", "Check the installation."
-            )
-        return self.profile_port.export_changes()
-
-    def apply_profile(self, document: Mapping[str, Any]) -> EditPreview:
-        if self.profile_port is None:
-            raise DomainError(
-                "PROFILE_UNAVAILABLE", "Presets are not available.", "Check the installation."
-            )
-        previous = dict(self.changes)
-        preview = self.profile_port.apply_profile(document)
-        self.preview = preview
-        if preview.errors:
-            return preview
-        self.changes = {change.key: change.new for change in preview.changed}
-        if self.changes != previous:
-            self._push_undo(previous)
-            self._redo.clear()
-        self.log(f"Applied preset ({len(self.changes)} changes)")
-        self._notify("changes")
-        return preview
-
     # -- diff --------------------------------------------------------------
     def compare(self, path: Path) -> RomDiff:
         if self.diff_port is None:
@@ -344,49 +294,3 @@ class UiController:
         self.log(f"Compared with {Path(path).name}")
         self._notify("diff")
         return self.last_diff
-
-    # -- apply -------------------------------------------------------------
-    def device_status(self) -> DeviceStatus:
-        if self.apply_port is None:
-            raise DomainError(
-                "APPLY_UNAVAILABLE", "Applying is not available.", "Check the installation."
-            )
-        return self.apply_port.device_status()
-
-    def apply_dry_run(self) -> ApplyPreview:
-        if self.apply_port is None:
-            raise DomainError(
-                "APPLY_UNAVAILABLE", "Applying is not available.", "Check the installation."
-            )
-        return self.apply_port.dry_run()
-
-    def apply_execute(self) -> ApplyResult:
-        if self.apply_port is None:
-            raise DomainError(
-                "APPLY_UNAVAILABLE", "Applying is not available.", "Check the installation."
-            )
-        result = self.apply_port.execute()
-        self.log(f"Apply: {result.state}", "INFO" if result.ok else "ERROR")
-        self._notify("apply")
-        return result
-
-    def apply_restore(self) -> ApplyResult:
-        if self.apply_port is None:
-            raise DomainError(
-                "APPLY_UNAVAILABLE", "Applying is not available.", "Check the installation."
-            )
-        result = self.apply_port.restore()
-        self.log(f"Restore: {result.state}", "INFO" if result.ok else "ERROR")
-        self._notify("apply")
-        return result
-
-    # -- helpers -----------------------------------------------------------
-    def changed_fields(self) -> list[FieldChange]:
-        if self.preview is None:
-            return []
-        return list(self.preview.changed)
-
-    def batch_risk(self) -> str:
-        if self.preview is None:
-            return "T0"
-        return self.preview.batch_risk

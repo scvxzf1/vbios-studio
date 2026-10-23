@@ -11,10 +11,11 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
-from vbios_studio.domain.errors import IO_ERROR
+from vbios_studio.domain.errors import IO_ERROR, DomainError
 from vbios_studio.domain.models import ApplyPreview, ApplyResult
+from vbios_studio.ports.apply import Operation
 
 REG_SZ = 1
 REG_BINARY = 3
@@ -79,15 +80,19 @@ class WindowsPlatform(Protocol):
     def restart_device(self, instance_id: str) -> tuple[int | None, str]:
         """Restart one device and return ``(exit code, output)``."""
 
+    def vbios_image(self, adapter: WindowsAdapterInfo) -> bytes | None:
+        """Read the VBIOS image the driver is running, or return ``None`` if unavailable."""
+
 
 @dataclass(frozen=True, slots=True)
 class Step:
     """One registry operation in a plan."""
 
-    operation: str
+    operation: Literal["set", "delete"]
     name: str
     kind: int = 0
     value: Any = None
+    source: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,12 +193,12 @@ def plan_load(
         warnings.append("An existing override is replaced; unload restores only EnableGpuFirmware.")
     steps: list[Step] = []
     if backup is None:
-        steps.append(Step("set", PREVIOUS_VALUE_NAME, REG_SZ, previous))
-    steps.extend(Step("delete", name) for name in deletes)
+        steps.append(Step("set", PREVIOUS_VALUE_NAME, REG_SZ, previous, "previous"))
+    steps.extend(Step("delete", name, source="legacy") for name in deletes)
     steps.extend(
         [
-            Step("set", OVERRIDE_VALUE_NAME, REG_BINARY, payload),
-            Step("set", ENABLE_GPU_FIRMWARE_VALUE, REG_DWORD, FIRMWARE_OVERRIDE),
+            Step("set", OVERRIDE_VALUE_NAME, REG_BINARY, payload, "payload"),
+            Step("set", ENABLE_GPU_FIRMWARE_VALUE, REG_DWORD, FIRMWARE_OVERRIDE, "constant"),
         ]
     )
     values: dict[str, Any] = {
@@ -233,10 +238,10 @@ def plan_unload(
     warnings: list[str] = []
     restore: Any = "unchanged"
     if saved == ABSENT:
-        steps.append(Step("delete", ENABLE_GPU_FIRMWARE_VALUE))
+        steps.append(Step("delete", ENABLE_GPU_FIRMWARE_VALUE, source="backup"))
         restore = "delete"
     elif isinstance(saved, int):
-        steps.append(Step("set", ENABLE_GPU_FIRMWARE_VALUE, REG_DWORD, saved))
+        steps.append(Step("set", ENABLE_GPU_FIRMWARE_VALUE, REG_DWORD, saved, "backup"))
         restore = saved
     elif backup is not None:
         warnings.append(
@@ -244,10 +249,10 @@ def plan_unload(
         )
     else:
         warnings.append("No previous-value marker exists; EnableGpuFirmware is left unchanged.")
-    steps.extend(Step("delete", name) for name in deletes)
-    steps.append(Step("delete", OVERRIDE_VALUE_NAME))
+    steps.extend(Step("delete", name, source="legacy") for name in deletes)
+    steps.append(Step("delete", OVERRIDE_VALUE_NAME, source="payload"))
     if backup is not None:
-        steps.append(Step("delete", PREVIOUS_VALUE_NAME))
+        steps.append(Step("delete", PREVIOUS_VALUE_NAME, source="backup"))
     values: dict[str, Any] = {
         "target": f"HKLM\\{adapter.driver_key}",
         "device": adapter.name,
@@ -319,6 +324,11 @@ def readback_unload(key: RegistryKey, plan: RegistryPlan) -> ApplyResult | None:
     return None
 
 
+def operations_for(plan: RegistryPlan) -> tuple[Operation, ...]:
+    """Map the exact plan steps to the UI-facing operation list."""
+    return tuple(Operation(step.operation, step.name, step.source) for step in plan.steps)
+
+
 def preview(plan: RegistryPlan) -> ApplyPreview:
     """Convert a plan into the UI-facing dry-run DTO."""
     return ApplyPreview(
@@ -329,3 +339,37 @@ def preview(plan: RegistryPlan) -> ApplyPreview:
         restart_required=plan.restart_required,
         warnings=plan.warnings,
     )
+
+
+def describe_operations(
+    platform: WindowsPlatform,
+    adapter: WindowsAdapterInfo,
+    payload: bytes | None,
+    *,
+    action: str,
+    restart: bool = True,
+) -> tuple[Operation, ...]:
+    """Return the operations the action will execute, without writing."""
+    if action == "load":
+        if payload is None:
+            raise DomainError(
+                "NO_PAYLOAD", "No payload is configured.", "Export a loader payload first."
+            )
+        planned = plan_load(platform, adapter, payload, restart=restart)
+    elif action in ("restore", "unload"):
+        planned = plan_unload(platform, adapter, restart=restart)
+    else:
+        raise DomainError(
+            "INVALID_ACTION",
+            f"Unsupported apply action: {action}",
+            "Use load or restore.",
+        )
+    if isinstance(planned, ApplyResult):
+        details = planned.details
+        raise DomainError(
+            str(details.get("code", "PLAN_FAILED")),
+            planned.message,
+            str(details.get("hint", "")),
+            details,
+        )
+    return operations_for(planned)

@@ -12,6 +12,11 @@ import shutil
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
+
+from vbios_studio.domain.errors import DomainError
+from vbios_studio.domain.models import ApplyPreview, ApplyResult, DeviceStatus, OverrideState
+from vbios_studio.ports.apply import Operation
 
 LOADER_EXECUTABLE = "nvidia-linux-vbios-vix-loader"
 COMMON_PATHS = (
@@ -53,6 +58,8 @@ class LinuxLoaderAdapter:
         self._which = which or shutil.which
         self._search_paths = tuple(search_paths)
         self._executable = executable or (lambda path: os.access(path, os.X_OK))
+        self._payload: bytes | None = None
+        self._payload_path: Path | None = None
 
     def find_loader(self) -> str | None:
         """Return the loader path when installed and executable, otherwise ``None``."""
@@ -99,6 +106,83 @@ class LinuxLoaderAdapter:
             "guidance": self.guidance(payload_path),
             "manual_only": True,
         }
+
+    # ------------------------------------------------------------- ApplyPort
+    def configure_payload(self, payload: bytes, *, source: Path | None = None) -> None:
+        """Store the saved payload for guidance and verification."""
+        self._payload = bytes(payload)
+        self._payload_path = Path(source) if source is not None else None
+
+    def describe_operations(self, action: Literal["load", "restore"]) -> tuple[Operation, ...]:
+        """Linux never writes registry values; there are no operations."""
+        if action not in ("load", "restore"):
+            raise DomainError(
+                "INVALID_ACTION", f"Unsupported apply action: {action}", "Use load or restore."
+            )
+        return ()
+
+    def device_status(self) -> DeviceStatus:
+        """Return a read-only loader detection record, never a fake GPU."""
+        probe = self.probe()
+        state: OverrideState = "no-override" if probe.found else "unknown"
+        return DeviceStatus(0, "Linux loader (manual)", "", None, state, False)
+
+    def dry_run(self) -> ApplyPreview:
+        """Return copyable guidance; this adapter never writes system files."""
+        if self._payload is None:
+            return ApplyPreview(
+                "load", "", {"error": "no payload configured"}, 0, False, ("Save a payload first.",)
+            )
+        path = str(self._payload_path) if self._payload_path is not None else "<saved payload>"
+        guidance = self.guidance(path)
+        return ApplyPreview(
+            "load",
+            "nvidia-linux-vbios-vix-loader",
+            {"guidance": guidance, "manual_only": True, "payload_size": len(self._payload)},
+            len(self._payload),
+            False,
+            ("Manual installation is required; VBIOS Studio will not run the loader.",),
+        )
+
+    def execute(self) -> ApplyResult:
+        """Refuse execution: Linux injection is intentionally manual-only."""
+        guidance = self.guidance(str(self._payload_path or "<saved payload>"))
+        return ApplyResult(
+            False,
+            "manual-only",
+            "Linux loader execution is manual-only; follow the exported guidance.",
+            {"code": "MANUAL_ONLY", "guidance": guidance},
+        )
+
+    def restore(self) -> ApplyResult:
+        """Refuse automatic restore; the external loader owns that operation."""
+        return ApplyResult(
+            False,
+            "manual-only",
+            "Restore is managed by the external Linux loader; follow its documentation.",
+            {"code": "MANUAL_ONLY"},
+        )
+
+    def verify(self, running_image: bytes | None = None) -> ApplyResult:
+        """Compare an explicitly supplied running image; no system read is attempted."""
+        if self._payload is None:
+            return ApplyResult(
+                False, "unknown", "No payload is configured for comparison.", {"code": "NO_PAYLOAD"}
+            )
+        if running_image is None:
+            return ApplyResult(
+                False,
+                "unknown",
+                "Running image comparison is unavailable in the Linux manual path.",
+                {"code": "VERIFY_UNAVAILABLE", "hint": "Use the loader's status command."},
+            )
+        if running_image == self._payload:
+            return ApplyResult(
+                True, "override-active", "Supplied running image matches the saved payload.", {}
+            )
+        return ApplyResult(
+            False, "override-not-active", "Supplied running image differs from saved payload.", {}
+        )
 
     def run(self) -> None:
         """The adapter intentionally has no execution path."""

@@ -15,15 +15,25 @@ from gi.repository import Adw, Gtk
 
 from vbios_studio.ui.a11y import set_accessible
 
+# Frozen by docs/risk-model.md §7.2.  Do not silently change these words.
+EXPERIMENTAL_UNLOCK_WORD = "I UNDERSTAND"
+T3_CONFIRM_WORD = "T3"
+
 
 @dataclass(frozen=True)
 class ConfirmationRules:
     require_checkbox: bool = True
     required_word: str = ""
+    allowed_words: tuple[str, ...] = ()
+
+    @property
+    def needs_word(self) -> bool:
+        return bool(self.required_word or self.allowed_words)
 
     def accepts(self, checked: bool, typed: str) -> bool:
         checkbox_ok = not self.require_checkbox or checked
-        word_ok = not self.required_word or typed.strip() == self.required_word
+        accepted = self.allowed_words or ((self.required_word,) if self.required_word else ())
+        word_ok = not accepted or typed.strip() in accepted
         return checkbox_ok and word_ok
 
 
@@ -83,11 +93,13 @@ class ConfirmDialog(Adw.Window):
             self.checkbox = Gtk.CheckButton(label=checkbox_label)
             set_accessible(self.checkbox, checkbox_label)
             box.append(self.checkbox)
-        if self.rules.required_word:
+        if self.rules.needs_word:
             label = Gtk.Label(label=word_label, xalign=0)
             box.append(label)
             self.word_entry = Gtk.Entry()
-            self.word_entry.set_placeholder_text(self.rules.required_word)
+            self.word_entry.set_placeholder_text(
+                self.rules.required_word or " / ".join(self.rules.allowed_words)
+            )
             set_accessible(self.word_entry, word_label or self.rules.required_word)
             box.append(self.word_entry)
 

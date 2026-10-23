@@ -146,6 +146,16 @@ class WinregPlatform:
         result = self.runner.run(["pnputil", "/restart-device", instance_id])
         return result.returncode, (result.stdout + result.stderr).strip()
 
+    def vbios_image(self, adapter: WindowsAdapterInfo) -> bytes | None:
+        """Return ``None`` until an NvAPI readback provider is injected.
+
+        The upstream Windows loader reads the active image through NvAPI; this
+        build keeps that optional boundary explicit so Verify fails closed rather
+        than comparing the stored override with itself.
+        """
+        del adapter
+        return None
+
 
 # Imported for re-export convenience; keeps the adapter module's public names stable.
 __all__ = [

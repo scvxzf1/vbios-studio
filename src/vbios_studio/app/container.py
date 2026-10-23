@@ -7,6 +7,7 @@ open a device.
 
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
@@ -49,11 +50,16 @@ def build_profile_port(editor: EditorPort | None = None) -> ProfilePort:
 
 
 def build_apply_port() -> ApplyPort:
-    """Create the controlled system apply adapter.
+    """Create the platform-specific apply adapter.
 
-    On non-Windows platforms the adapter reports an unavailable backend rather
-    than silently pretending an override was written.
+    Linux gets a fail-closed, guidance-only loader adapter; Windows gets the
+    controlled registry adapter. Unsupported platforms get the Windows adapter
+    so its platform error remains explicit rather than silently succeeding.
     """
+    if sys.platform.startswith("linux"):
+        from vbios_studio.adapters.system.linux_loader import LinuxLoaderAdapter
+
+        return LinuxLoaderAdapter()
     from vbios_studio.adapters.system.windows_registry import WindowsRegistryAdapter
 
     return WindowsRegistryAdapter()

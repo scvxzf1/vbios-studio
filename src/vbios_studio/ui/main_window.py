@@ -31,10 +31,10 @@ from vbios_studio.ui.components.sidebar import Sidebar
 from vbios_studio.ui.components.status_bar import StatusBar
 from vbios_studio.ui.controller import ConfirmationRequired, T3LockedError, UiController
 from vbios_studio.ui.dialogs.about_dialog import show_about
-from vbios_studio.ui.dialogs.confirm_dialog import ConfirmationRules, ConfirmDialog
 from vbios_studio.ui.dialogs.error_dialog import ErrorDialog
 from vbios_studio.ui.dialogs.shortcuts_dialog import show_shortcuts
 from vbios_studio.ui.drop_target import install_drop_target
+from vbios_studio.ui.profile_flow import ProfileFlow, confirm_single_edit
 from vbios_studio.ui.shortcuts import install_shortcuts
 
 LanguageCallback = Callable[[str], None]
@@ -54,6 +54,7 @@ class MainWindow(Adw.ApplicationWindow):
         self.set_default_size(1280, 840)
         self.set_title(_("app.title"))
         self.controller = controller
+        self.profile_flow = ProfileFlow(self)
         self.on_language = on_language or (lambda _code: None)
         self.on_theme = on_theme or (lambda _theme: None)
         self._refresh_scheduled = False
@@ -171,6 +172,8 @@ class MainWindow(Adw.ApplicationWindow):
     # --------------------------------------------------------------- events
     def _on_controller_event(self, reason: str) -> None:
         if reason in ("changes", "filters", "section", "view", "experimental", "preview", "undo"):
+            if reason == "changes":
+                self.apply_panel.refresh_t3_banner()
             self._schedule_refresh()
             return
         if reason == "document":
@@ -313,37 +316,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._schedule_refresh()
 
     def _confirm_t3(self, need: ConfirmationRequired) -> None:
-        body = _("t3.confirm.body").format(
-            field=need.field.label,
-            old=need.old if need.old is not None else "—",
-            new=need.new,
-            unit=need.field.unit,
-        )
-
-        def commit() -> None:
-            try:
-                preview = self.controller.set_value(need.field.key, need.new, t3_confirmed=True)
-            except DomainError as exc:
-                self._show_error(_("edit.error.title"), exc)
-            else:
-                if preview.errors:
-                    self._show_field_errors(preview)
-            self._refresh_all()
-
-        dialog = ConfirmDialog(
-            self,
-            _("t3.confirm.title"),
-            body,
-            rules=ConfirmationRules(require_checkbox=True, required_word="CONFIRM"),
-            confirm_label=_("t3.confirm.accept"),
-            cancel_label=_("common.cancel"),
-            checkbox_label=_("t3.confirm.checkbox"),
-            word_label=_("t3.confirm.word"),
-            on_confirm=commit,
-            width=600,
-        )
-        dialog.connect("close-request", lambda _w: self._schedule_refresh())
-        dialog.present()
+        confirm_single_edit(self, need)
 
     def _show_field_errors(self, preview: EditPreview) -> None:
         first: FieldError = preview.errors[0]
