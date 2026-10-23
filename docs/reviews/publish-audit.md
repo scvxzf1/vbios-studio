@@ -1,5 +1,8 @@
 # VBIOS Studio 发布后审计报告
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 > 审计日期：2026-10-23 · 对象：[scvxzf1/vbios-studio](https://github.com/scvxzf1/vbios-studio) · Release：[v0.1.0](https://github.com/scvxzf1/vbios-studio/releases/tag/v0.1.0)
 >
 > **结论：PASS（软件/发布层）。** 五项发布验收全部通过；§6 保留不影响本次发布有效性的剩余风险，建议在 v0.1.1 处理。

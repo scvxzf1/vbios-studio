@@ -1,8 +1,11 @@
 # VBIOS Studio 发布前终审报告 v2
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 > 评审日期：2026-10-23 · 范围：**仅 F13/F14** · 结论：**PASS（软件层）**
 >
-> 本报告取代 `docs/review-final-report.md`：上一轮 F13/F14 的 root-cause 问题已由 ApplyPort 操作清单与实时确认正文修复；本报告重新绑定发布哈希。F11/F12 已在上一轮关闭，本轮不重新展开。
+> 本报告取代 `docs/reviews/review-final-report.md`：上一轮 F13/F14 的 root-cause 问题已由 ApplyPort 操作清单与实时确认正文修复；本报告重新绑定发布哈希。F11/F12 已在上一轮关闭，本轮不重新展开。
 
 ## 0. 评审规则
 
@@ -15,7 +18,7 @@
 
 **PASS（软件层）。** F13/F14 均通过生产路径（真实 `ApplyPanel` + `FakePlatform`/`WindowsRegistryAdapter`）验证，UI 不再存在硬编码注册表键名单，确认操作清单与实际写入来自同一份 `RegistryPlan.steps`。42 个绑定文件在评审结束时复算 **42/42 一致**。
 
-本报告 §7 的 42 文件 SHA-256 集合即为**可发布哈希集合**；发布审计应以本报告为唯一依据，不使用上一轮 `docs/review-final-report.md` 的 needs_revision 结论。
+本报告 §7 的 42 文件 SHA-256 集合即为**可发布哈希集合**；发布审计应以本报告为唯一依据，不使用上一轮 `docs/reviews/review-final-report.md` 的 needs_revision 结论。
 
 ## 2. 内容绑定基线
 
@@ -247,7 +250,7 @@ python -m pytest -q
 python3 tools/prepush_audit.py --strict
 .venv/bin/python -m pytest -q tests/ui/test_apply_confirmation.py
 .venv/bin/python -m pytest -q tests/apply/test_apply_operations.py
-test -f docs/review-final-v2.md
+test -f docs/reviews/review-final-v2.md
 ```
 
 ## 9. 最终判定

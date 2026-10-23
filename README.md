@@ -170,6 +170,7 @@ python -m vbios_studio --gui path/to/card.rom
 | [`docs/i18n.md`](docs/i18n.md) | gettext 翻译流程 |
 | [`docs/security.md`](docs/security.md) | 安全模型、数据与权限边界 |
 | [`docs/faq.md`](docs/faq.md) | 常见问题与故障排查 |
+| [`docs/reviews/README.md`](docs/reviews/README.md) | 历史评审/审计报告索引与当前状态 |
 | [`UPSTREAM.md`](UPSTREAM.md) | 上游 URL、pin SHA、同步日志 |
 
 ## 开发与质量闸门

@@ -1,5 +1,8 @@
 # 需求契约内容绑定复核记录
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 | 项目 | 值 |
 | --- | --- |
 | 复核对象 | `docs/requirements.md` |
@@ -78,7 +81,7 @@
 
 ### 3.2 与 README 功能一览的逐条映射
 
-README.md 的 `## 功能一览` 只有 10 个编号条目，首句为“对应需求 [`docs/requirements.md`](docs/requirements.md) §4 的 GUI-01–GUI-10：”，无合并、省略或第 11 条。逐条对应如下：
+README.md 的 `## 功能一览` 只有 10 个编号条目，首句为“对应需求 [`docs/requirements.md`](../requirements.md) §4 的 GUI-01–GUI-10：”，无合并、省略或第 11 条。逐条对应如下：
 
 | GUI 基线 | §4 要求（摘要） | README 功能一览条目 | 对应 FR |
 | --- | --- | --- | --- |
@@ -135,10 +138,10 @@ sha256sum docs/requirements.md
 # 期望输出：7754123399fec085dce3a11d3d0fbfd423a02265bd65653836d603829cfab6c7  docs/requirements.md
 
 # 2) 确认本复核记录存在
-test -f docs/requirements-review.md
+test -f docs/reviews/requirements-review.md
 
 # 3) 确认本记录包含内容绑定哈希
-grep -c 'sha256' docs/requirements-review.md
+grep -c 'sha256' docs/reviews/requirements-review.md
 # 期望：至少 1 处
 ```
 

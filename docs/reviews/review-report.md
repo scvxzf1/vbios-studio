@@ -1,5 +1,8 @@
 # VBIOS Studio 独立评审报告（第二轮）
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 > 评审角色：reviewer · 评审日期：2026-10-23 · 被评审交付：修复后的当前工作树
 >
 > **结论：PASS（软件层）**。本轮对 33 个文件做内容绑定；F1–F7 关闭项均通过，验收 4 项均通过。另记录 4 项非阻断观察（§5），其中预设整体替换当前改动建议作为发布前 follow-up；不影响本轮 PASS 判定。
@@ -52,7 +55,7 @@
 
 - 对当前工作树独立复核上一轮 F1–F7，并重新检查分层、T0–T3 风险标注、文件大小/重复实现、README/docs 测试声明。
 - 独立执行：全量 `pytest`、`ruff check`、`ruff format --check`、`mypy --strict`、`lint-imports`、`tools/build_local.sh --check`、`tools/prepush_audit.py --strict`、3 进程并发 `vbios-studio-gui --selftest`、`git check-ignore`。
-- 评审只写入本文件 `docs/review-report.md`；未改动源码、测试或文档。
+- 评审只写入本文件 `docs/reviews/review-report.md`；未改动源码、测试或文档。
 - 本报告所有行号均针对 §0 基线字节；行号只用于定位，修复后应重新定位符号。
 
 ## 2. 上一轮 F1–F7 关闭核对

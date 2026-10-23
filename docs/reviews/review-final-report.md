@@ -1,5 +1,8 @@
 # VBIOS Studio 发布前终审报告
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 > 评审日期：2026-10-23 · 评审范围：**仅 F11/F12/F13/F14** · 结论：**NEEDS_REVISION（暂不可发布）**
 
 ## 0. 冻结规则（本轮预先声明）
@@ -261,5 +264,5 @@ python -m pytest -q
 .venv/bin/ruff format --check src tests
 .venv/bin/mypy --strict src/vbios_studio
 python3 tools/prepush_audit.py --strict
-test -f docs/review-final-report.md
+test -f docs/reviews/review-final-report.md
 ```

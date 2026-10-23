@@ -1,5 +1,8 @@
 # VBIOS Studio v0.1.0 全量验收报告
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 - 验收日期：2026-10-23（Asia/Shanghai）
 - 验收对象：`/home/scv/文档/vbios-编辑/vbios-studio`（当前工作树；此阶段尚未初始化 Git 仓库，验收对象以文件系统内容为准）
 - 验收人：QA（独立执行）
@@ -146,7 +149,7 @@ xvfb-run -a ./bin/vbios-studio --selftest
 | `tests/contract/test_structure_audit.py` | 4 passed |
 | `src/vbios_studio` Python 模块 | 72 个，全部在 `docs/file-tree.md` 中列出且路径存在 |
 | `tests/` 测试文件 | 全部在 `docs/file-tree.md` 的 tests 表中出现（含 `test_selftest_process.py`） |
-| `docs/` 文档 | `requirements-review.md`、`verification-report.md` 等全部在 file-tree 中列出 |
+| `docs/reviews/` 文档 | `requirements-review.md`、`verification-report.md` 等全部在 file-tree 中列出 |
 | 模块 docstring / 400 行上限 | 全部通过 |
 
 ## 6. 仓库卫生审计

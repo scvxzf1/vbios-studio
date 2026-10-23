@@ -163,8 +163,16 @@ src/nvidia_vbios/
 ```text
 docs/
 ├── requirements.md      # 需求契约（FR-1..FR-6、GUI-01..10、Ports 附录）
-├── requirements-review.md # 需求契约内容绑定复核记录
-├── verification-report.md # 全量验收报告（构建/测试/分发包）
+├── reviews/             # 历史评审/审计报告与状态索引
+│   ├── README.md        # 报告索引：日期/结论/当前状态
+│   ├── review-report.md
+│   ├── review-delta-report.md
+│   ├── review-final-report.md
+│   ├── review-final-v2.md
+│   ├── publish-audit.md
+│   ├── publish-audit-v011.md
+│   ├── verification-report.md
+│   └── requirements-review.md
 ├── risk-model.md        # T0–T3 定义、逐字段风险、nvflash 安全边界
 ├── architecture.md      # 分层架构、依赖图、import-linter、数据流
 ├── file-tree.md         # 本文件

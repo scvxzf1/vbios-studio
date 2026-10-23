@@ -1,10 +1,13 @@
 # VBIOS Studio 增量复审报告（第三轮）
 
+> ⚠️ 历史记录：本报告反映当时状态，可能包含已被修复的问题。
+> 当前状态见 [评审与审计索引](README.md)。
+
 > 评审角色：reviewer · 评审日期：2026-10-23 · 被评审交付：T3 批次确认/预设替换提示修复 与 文档口径修复
 >
 > **结论：PASS（软件层）**。F8/F9/F10 的核心关闭条件均满足；全量 213 passed，lint-imports 5/5，既有 T3 门控与票据测试未被削弱。另记录 4 项非阻断文档/文案观察（§5），建议发布前处理。
 >
-> 前一轮 `docs/review-report.md` 的 33 文件绑定已被本轮改动取代；本报告是新的、内容绑定的发布依据。旧报告文件不在本任务 inScope，未修改。
+> 前一轮 `docs/reviews/review-report.md` 的 33 文件绑定已被本轮改动取代；本报告是新的、内容绑定的发布依据。旧报告文件不在本任务 inScope，未修改。
 
 ## 0. 评审基线（内容绑定）
 
@@ -56,7 +59,7 @@
 
 - 增量核对 F8/F9（T3 批次确认/预设替换提示）与 F10（文档口径），并复核本轮是否削弱既有 T3 门控/票据测试。
 - 独立执行：全量 `pytest`、`lint-imports`、`ruff`、`format --check`、`mypy --strict`、`tools/prepush_audit.py --strict`、3 进程并发 GUI selftest、目标测试子集、文档 grep 与 `test -f`。
-- 只写入本文件 `docs/review-delta-report.md`；未改动源码、测试、既有文档或旧评审报告。
+- 只写入本文件 `docs/reviews/review-delta-report.md`；未改动源码、测试、既有文档或旧评审报告。
 - 行号针对 §0 基线字节；本轮不需要修改代码，因此不存在“修复后行号漂移”的同一文件复评问题。
 
 ## 2. F8：T3 批次横幅与最终应用确认正文
@@ -254,7 +257,7 @@ $ .venv/bin/python -m pytest -q tests/ui/test_apply_confirmation.py tests/ui/tes
 | 36 | `tests/ui/test_apply_confirmation.py` | `9bf7592701226c6cac5b1cab1fa18e065e2567de4b68b3c9c876ee4a87b85846` | `9bf7592701226c6cac5b1cab1fa18e065e2567de4b68b3c9c876ee4a87b85846` | 是 |
 | 37 | `tests/ui/test_profile_replace.py` | `34ad9ef7fe9e8660e7974fd91d251fe3c23982217ef4c72a4d287f5650a148f3` | `34ad9ef7fe9e8660e7974fd91d251fe3c23982217ef4c72a4d287f5650a148f3` | 是 |
 
-**37/37 一致，评审期间没有任何基线文件被改动。** 本报告 PASS 绑定上述哈希集合；旧 `docs/review-report.md` 的 33 文件绑定不覆盖本轮变更，发布审计应引用本报告。
+**37/37 一致，评审期间没有任何基线文件被改动。** 本报告 PASS 绑定上述哈希集合；旧 `docs/reviews/review-report.md` 的 33 文件绑定不覆盖本轮变更，发布审计应引用本报告。
 
 ## 8. 结论
 

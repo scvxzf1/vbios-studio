@@ -12,7 +12,7 @@
 
 ## 0. 文档约定
 
-- **MUST / SHOULD / MAY**：MUST 为发布阻断项；SHOULD 为发布前应完成项，未完成须在 `docs/verification-report.md` 记录理由；MAY 为可选。
+- **MUST / SHOULD / MAY**：MUST 为发布阻断项；SHOULD 为发布前应完成项，未完成须在 `docs/reviews/verification-report.md` 记录理由；MAY 为可选。
 - **验收口径**：每条需求以「可执行命令 + 可观察结果」或「可在 GUI 中复现的操作序列」描述，不接受“界面美观”“体验良好”这类不可判定表述。
 - **实验性（experimental）**：沿用上游字段 `evidence` 中的实验性标记；表示**没有硬件验证证据**，不表示“可以随便改”。风险等级与实验性标记是两条正交属性，实验性字段最低为 T2，涉及电压/电流/保护阈值/高级电源行为的一律 T3。完整模型见 `docs/risk-model.md`。
 - **原厂未修改镜像（pristine image）**：用户从自有显卡导出、在 VBIOS Studio 中**未产生任何 staged change**、且 SHA-256 与导入时记录一致的镜像。任何字节变化（含仅改校验和平衡字节）都使其成为“修改后镜像”。
@@ -193,7 +193,7 @@
 | FR-6.1 | `src/nvidia_vbios/` 是上游 editor 仓库在 pin SHA 的**逐字节只读镜像**；任何本地修改视为发布阻断。 |
 | FR-6.2 | `UPSTREAM.md` 记录两个上游仓库 URL、pin 的 40 位 commit SHA、版本、日期、许可证，以及可复制的 pin 校验命令。 |
 | FR-6.3 | 上游同步流程：单独分支/PR、更新 `UPSTREAM.md` 与 submodule/vendor 清单、跑 parity 与全量静态测试、记录变更文件与结果；冲突不得用“覆盖本地”解决。 |
-| FR-6.4 | 文档齐全：`architecture.md`、`file-tree.md`、`risk-model.md`、`testing.md`、`upstream-sync.md`、`i18n.md`、`security.md`、`faq.md`、`verification-report.md`、`prepush-audit.md`。 |
+| FR-6.4 | 文档齐全：`architecture.md`、`file-tree.md`、`risk-model.md`、`testing.md`、`upstream-sync.md`、`i18n.md`、`security.md`、`faq.md`、`reviews/verification-report.md`、`prepush-audit.md`。 |
 | FR-6.5 | 质量闸门：`ruff check`、`ruff format --check`、`mypy --strict`、`lint-imports`、`pytest` 全部退出码 0；每条检查有“故意违反必须失败”的元测试。 |
 | FR-6.6 | 仓库卫生：无 `.rom`/`.bin`/`.exe`/`.env`/密钥/构建产物/大于 1 MB 文件；`.gitignore` 覆盖；`tools/prepush_audit.py` 输出 PASS。 |
 | FR-6.7 | 公开 GitHub 仓库名 `vbios-studio`，GPL-3.0-or-later LICENSE + NOTICE（上游归属、非 NVIDIA 官方、商标）；Release `v0.1.0` 附 Linux/Windows 产物与 `SHA256SUMS`。 |
@@ -203,7 +203,7 @@
 
 1. `cd src/nvidia_vbios && git rev-parse HEAD`（或 vendor 清单哈希）等于 `UPSTREAM.md` 中的 SHA；`tests/contract/test_version.py` 逐文件哈希一致。
 2. `grep -E 'https://github.com/Panchovix/(nvidia-vbios-vix-editor|nvidia-windows-vbios-vix-loader)' UPSTREAM.md` 命中 2 个 URL；每个 pin 为 40 位 hex。
-3. `ruff check . && ruff format --check . && mypy --strict src && lint-imports && pytest -q` 全部退出码 0（记录在 `docs/verification-report.md`）。
+3. `ruff check . && ruff format --check . && mypy --strict src && lint-imports && pytest -q` 全部退出码 0（记录在 `docs/reviews/verification-report.md`）。
 4. `python tools/prepush_audit.py` 结论 PASS；`git ls-files | grep -Ei '\.(rom|bin|exe)$'` 为空。
 5. `gh repo view <owner>/vbios-studio --json visibility` 返回 `PUBLIC`；Release 附件可下载且 `sha256sum -c` 通过。
 6. README 首个屏幕内出现“测试不完全”和“未在真实硬件验证”两个短语。
@@ -227,7 +227,7 @@
 | GUI-09 | 空状态引导（拖放提示）、统一可复制的错误对话框、帮助菜单快捷键表 | 无 ROM 时显示拖放提示；所有错误走同一 dialog 组件且可复制；快捷键表与实现一致 | FR-1/5 |
 | GUI-10 | 无障碍：全部可 Tab 遍历、有 accessible label；风险配色 T0 灰 / T1 蓝 / T2 橙 / T3 红 | Tab 顺序完整无陷阱；控件 accessible name 非空；4 种徽章颜色与文档一致且非唯一编码 | FR-2/5 |
 
-**GUI 验收总口径**：`xvfb-run -a python -m vbios_studio.ui --selftest` 退出码 0；`pytest -q tests/gui` 全绿；人工按上表逐项走查并记录在 `docs/verification-report.md`。**没有真实硬件不构成跳过 GUI 验收的理由。**
+**GUI 验收总口径**：`xvfb-run -a python -m vbios_studio.ui --selftest` 退出码 0；`pytest -q tests/gui` 全绿；人工按上表逐项走查并记录在 `docs/reviews/verification-report.md`。**没有真实硬件不构成跳过 GUI 验收的理由。**
 
 ## 5. 非功能需求
 
@@ -290,7 +290,7 @@ README 必须按以下顺序与要求组织；文档负责人负责最终文案�
 ## 9. 变更控制
 
 1. 本文件冻结后，任何范围/验收口径变更必须：新增 `docs/requirements.md` 末尾“变更记录”条目（日期、变更人、原因、影响任务），并由 captain 批准。
-2. 删除或降低安全不变量（§2）与 T3 门槛属于**破坏性变更**，必须由 reviewer 复核并在 `docs/verification-report.md` 记录。
+2. 删除或降低安全不变量（§2）与 T3 门槛属于**破坏性变更**，必须由 reviewer 复核并在 `docs/reviews/verification-report.md` 记录。
 3. 字段风险等级调整必须同步 `docs/risk-model.md` 与代码注册表，否则文档一致性测试失败。
 
 ### 变更记录
