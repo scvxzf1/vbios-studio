@@ -1,6 +1,6 @@
 # 文件树与模块职责
 
-> 本文件与 v0.1.0 真实目录一致；`tests/contract/test_docs_tree.py` 强制校验“源码模块路径必须出现在本文、本文中的路径必须真实存在”。新增/删除模块时必须同步更新本文件。
+> 本文件与 v0.1.1 真实目录一致；`tests/contract/test_docs_tree.py` 强制校验“源码模块路径必须出现在本文、本文中的路径必须真实存在”。新增/删除模块时必须同步更新本文件。
 
 ## 1. 仓库总览
 
@@ -26,7 +26,7 @@ vbios-studio/
 
 | 路径 | 职责 |
 | --- | --- |
-| `src/vbios_studio/__init__.py` | 包版本 `__version__ = "0.1.0"` |
+| `src/vbios_studio/__init__.py` | 包版本 `__version__ = "0.1.1"` |
 | `src/vbios_studio/__main__.py` | `python -m vbios_studio` 入口 |
 | `src/vbios_studio/domain/__init__.py` | domain 包导出与 docstring |
 | `src/vbios_studio/domain/models.py` | 冻结 DTO：`DocumentSnapshot`、`FieldSnapshot`、`EditPreview`、`SaveResult`、`FieldDiff`、`ImageDiff`、`RomDiff`、`DeviceStatus`、`ApplyPreview`、`ApplyResult` |

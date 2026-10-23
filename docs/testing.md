@@ -2,7 +2,7 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 适用版本 | v0.1.0 |
+| 适用版本 | v0.1.1 |
 | 最近一次本机全量 | 2026-10-23：`python -m pytest -q \| tail -1` → **224 passed**（无 skip） |
 | 代码范围 | 离线解析、合成 ROM、fake 系统后端、xvfb 离屏 UI；**无真实 GPU** |
 | 强制入口 | `tools/build_local.sh --check` 与 `.github/workflows/ci.yml` |
@@ -86,8 +86,8 @@ bash tools/build_local.sh --check
 | `ruff format --check src tests` | 当前源码与测试文件全部格式正确，exit 0 |
 | `mypy --strict src/vbios_studio` | Success: no issues found in 77 source files，exit 0 |
 | `lint-imports` | 5 kept, 0 broken，exit 0 |
-| `python -m vbios_studio --version` | `vbios-studio 0.1.0`，exit 0 |
-| `bash tools/build_local.sh --check` | 5 条 import-linter 契约 KEPT，224 passed / 0 skipped，`vbios-studio 0.1.0`，exit 0 |
+| `python -m vbios_studio --version` | `vbios-studio 0.1.1`，exit 0 |
+| `bash tools/build_local.sh --check` | 5 条 import-linter 契约 KEPT，224 passed / 0 skipped，`vbios-studio 0.1.1`，exit 0 |
 
 > 上表是**本机**（Linux + 系统 PyGObject/GTK 4）结果，不是 Windows 或真实硬件结果。
 

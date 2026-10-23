@@ -5,7 +5,7 @@
 | 文档版本 | `1.0.0-frozen` |
 | 冻结日期 | 2026-10-22 |
 | 状态 | **FROZEN**（规范文件；与代码注册表不一致视为发布阻断） |
-| 适用版本 | v0.1.0 |
+| 适用版本 | v0.1.1 |
 | 关联 | `docs/requirements.md` §2/§3、`UPSTREAM.md`、`docs/security.md`、`src/vbios_studio/domain/risk_registry.py` |
 
 > 本文是**规范**，不是建议。所有字段风险等级、UI 门槛、nvflash 守卫行为都必须与本文逐项一致；`tests/core/test_risk_registry.py` 与 `tests/contract/test_docs_tree.py` 会强制校验。

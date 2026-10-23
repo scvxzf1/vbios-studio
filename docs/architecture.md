@@ -2,8 +2,8 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 版本 | `0.1.0` |
-| 状态 | v0.1.0 实现完成（骨架冻结边界，核心引擎、GTK 界面、应用与刷写适配器、集成接线均已按边界落地） |
+| 版本 | `0.1.1` |
+| 状态 | v0.1.1 补丁版本（在 v0.1.0 实现基础上完成文档清理与 selftest 临时目录修复） |
 | 关联 | [`requirements.md`](requirements.md)、[`risk-model.md`](risk-model.md)、[`file-tree.md`](file-tree.md)、[`../UPSTREAM.md`](../UPSTREAM.md) |
 | 强制方式 | `lint-imports` + `tests/contract/` 的 AST/包结构/文档一致性测试 |
 

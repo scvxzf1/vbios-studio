@@ -1,4 +1,4 @@
-# VBIOS Studio v0.1.0
+# VBIOS Studio v0.1.1
 
 > [!WARNING]
 > ## ⚠️ 测试不完全 / 未在真实硬件验证
@@ -13,12 +13,19 @@
 
 VBIOS Studio 是基于 [Panchovix/nvidia-vbios-vix-editor](https://github.com/Panchovix/nvidia-vbios-vix-editor) 与 [nvidia-windows-vbios-vix-loader](https://github.com/Panchovix/nvidia-windows-vbios-vix-loader) 构建的 GTK4 图形化 NVIDIA VBIOS 编辑 / 应用套件：离线打开与检查 ROM，按 T0–T3 风险分级编辑字段（含实验性字段），生成新的 VBIOS 与 loader payload，并通过受控的 loader override 让修改生效。中英双语，Windows / Linux 双平台。
 
+## v0.1.1 修复
+
+- 更新 README 中过期的“预发布/等待评审”状态，明确 v0.1.0 已发布、v0.1.1 为补丁版本。
+- 清理 README、UPSTREAM.md、各包 README 与 CI 配置中的内部任务编号，改为面向读者的阶段/职责描述。
+- `--selftest` 默认把三张界面截图写入临时目录，不再改写仓库内的 `docs-assets/screenshots/`；显式 `--screenshots DIR` 仍写入指定目录。
+- 版本号升至 `0.1.1`：`python -m vbios_studio --version` 输出 `vbios-studio 0.1.1`。
+
 ## 下载
 
 | 平台 | 文件 | 说明 |
 | --- | --- | --- |
-| Linux x86_64 | `vbios-studio-0.1.0-linux-x86_64.tar.gz` | 需要系统 Python 3、PyGObject 与 GTK 4（例如 `sudo apt-get install python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`） |
-| Windows x86_64 | `vbios-studio-0.1.0-windows-x86_64.exe` | 单文件，内含 GTK 4 运行时；首次启动解包不联网 |
+| Linux x86_64 | `vbios-studio-0.1.1-linux-x86_64.tar.gz` | 需要系统 Python 3、PyGObject 与 GTK 4（例如 `sudo apt-get install python3-gi gir1.2-gtk-4.0 gir1.2-adw-1`） |
+| Windows x86_64 | `vbios-studio-0.1.1-windows-x86_64.exe` | 单文件，内含 GTK 4 运行时；首次启动解包不联网 |
 | 校验和 | `SHA256SUMS` | 覆盖上述两个产物 |
 
 ```bash
